@@ -31,6 +31,8 @@ const findSourceById = id => S.find(source => S.equals (id) (S.fst (source)))
 
 export const findSourceNameById = id => sources => S.snd (S.fromMaybe (S.Pair("erro") ("não encontrado")) (findSourceById (id) (sources)))
 
+// export const findSourceNameById = id => sources => S.find ()
+
 // const filterDuplicates = xs => [...new Set(xs)]
 
 const ProductRow = ({ product, sources, viewingCart, quantity }) => {

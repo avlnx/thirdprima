@@ -14,7 +14,9 @@ const S = require("sanctuary")
 const $ = require("sanctuary-def")
 
 const Variant = ({ variant, sources }) => {
-    const source = S.get (S.is ($.String)) ("source") (variant)
+    const url = S.prop("url")
+    const sourceUrl = S.prop ("source") (variant)
+    const source = S.find (s => S.equals (url (s)) (sourceUrl)) (sources)
 
     return (
         S.isNothing(source)
@@ -24,7 +26,7 @@ const Variant = ({ variant, sources }) => {
             />)
             : (
                 <Pane padding={majorScale (1)} display="flex" alignItems="center" >
-                    <Badge color="purple">{ findSourceNameById (lastItemInUrl (S.maybeToNullable (source))) (sources) }</Badge>
+                    <Badge color="purple">{ S.maybe ("N/A") (S.prop ("label")) (source) }</Badge>
                     <Text marginLeft={majorScale(2)}>{S.prop("pack_label")(variant)}</Text>
                     <Pane display="flex" alignItems="center" justifyContent="end">
                         <Strong marginLeft={majorScale(2)}>R$ {S.prop("price")(variant)}/</Strong>
