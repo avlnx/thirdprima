@@ -1,80 +1,46 @@
 import Link from 'next/link'
+import { Badge, Button, Heading, majorScale, minorScale, Pane, ShoppingCartIcon } from "evergreen-ui"
+import { brand, palette, primaTheme } from "../theme"
+
+const S = require ("sanctuary")
 
 function Header({ user, loading }) {
   return (
-    <header>
-      <nav>
-        <ul>
-          <li>
-            <Link href="/">
-              <a>Home</a>
-            </Link>
-          </li>
-          <li>
-            <Link href="/about">
-              <a>About</a>
-            </Link>
-          </li>
-          {!loading &&
-            (user ? (
-              <>
-                <li>
-                  <Link href="/profile">
-                    <a>Client-rendered profile</a>
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/advanced/ssr-profile">
-                    <a>Server rendered profile (advanced)</a>
-                  </Link>
-                </li>
-                <li>
-                  <a href="/api/logout">Logout</a>
-                </li>
-              </>
-            ) : (
-              <li>
-                <a href="/api/login">Login</a>
-              </li>
-            ))}
-        </ul>
-      </nav>
+    <Pane elevation={1} borderBottom="muted" background={brand} paddingX={majorScale(2)} paddingY={minorScale(1)} display="flex" alignItems="center" justifyContent="space-between">
+      <Pane display="flex">
+        <Heading size={100} color={S.prop("lightest")(palette)}>PRIMA</Heading>
+        <Badge color="neutral" isSolid marginLeft={majorScale(1)}>beta</Badge>
+      </Pane>
 
-      <style jsx>{`
-        header {
-          padding: 0.2rem;
-          color: #fff;
-          background-color: #333;
-        }
-        nav {
-          max-width: 42rem;
-          margin: 1.5rem auto;
-        }
-        ul {
-          display: flex;
-          list-style: none;
-          margin-left: 0;
-          padding-left: 0;
-        }
-        li {
-          margin-right: 1rem;
-        }
-        li:nth-child(2) {
-          margin-right: auto;
-        }
-        a {
-          color: #fff;
-          text-decoration: none;
-        }
-        button {
-          font-size: 1rem;
-          color: #fff;
-          cursor: pointer;
-          border: none;
-          background: none;
-        }
-      `}</style>
-    </header>
+      {!loading &&
+        (user ? (
+        <Heading size={100} color={S.prop("base")(palette)}>Olá {S.fromMaybe("")(S.get(_ => true)("name")(user))}</Heading>
+          // <>
+          //   <li>
+          //     <Link href="/profile">
+          //       <a>Client-rendered profile</a>
+          //     </Link>
+          //   </li>
+          //   <li>
+          //     <Link href="/advanced/ssr-profile">
+          //       <a>Server rendered profile (advanced)</a>
+          //     </Link>
+          //   </li>
+          //   <li>
+          //     <a href="/api/logout">Logout</a>
+          //   </li>
+          // </>
+          
+        ) : (
+            <li>
+              <a href="/api/login">Login</a>
+            </li>
+          ))}
+      
+
+      <Button style={S.prop("primaryButton")(primaTheme)} height={24} onClick={() => setViewingCart(!viewingCart)} iconAfter={ShoppingCartIcon}>
+        Carrinho</Button>
+    </Pane>
   )
 }
 

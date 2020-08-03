@@ -1,12 +1,62 @@
+import { useState } from "react"
 import Layout from '../components/layout'
 import { useFetchUser } from '../lib/user'
+import {
+  Button,
+  Spinner
+} from "evergreen-ui"
+import BlockSwitch from "../components/switch"
+import ProductList from "../components/productList"
+import Paginator from "../components/paginator"
+import Totalizer from "../components/totalizer"
 
-function Home() {
+const S = require ("sanctuary")
+
+function Home({ products }) {
   const { user, loading } = useFetchUser()
+  const [currentPage, setCurrentPage] = useState(1) // start at page 1
+  const [query, setQuery] = useState('') // start "not searching"
+
+  const [viewingCart, setViewingCart] = useState(false)
+
+  const apiEndpointGivenCurrentState = `http://localhost:9000/api/products/?page=${currentPage}${query ? "&search=" + query : ''}`
+
+  // const { data, error } = useSWR ([apiEndpointGivenCurrentState, token], tokenFetcher, {"shouldRetryOnError": false})
+
+  const getCount = S.get(_ => true)("count")
+  const dataCount = getCount(products)  // Maybe(1000)
+
+  const getResults = S.get(_ => true)("results")
+  const dataResultsCount = S.maybe(0)(S.size)(getResults(products))  // 0 or 50 for example
+
+  const numPages = Math.ceil(S.maybe(0)(n => S.div(dataResultsCount)(n))(dataCount))
 
   return (
     <Layout user={user} loading={loading}>
-      <h1>Next.js and Auth0 Example</h1>
+
+      {loading && <Spinner />}
+
+      {!loading && !user && (
+        <>
+          <p>
+            Seja bem vindo. Clique no botão para se autenticar. Você será brevemente redirecionado ao nosso serviço de autenticação Auth0. Finalizar o processo você será redirecionado novamente à Prima. <Button is="a" href="/api/login">Login</Button>
+          </p>
+        </>
+      )}
+
+      {user && (
+        <>
+        <BlockSwitch checked={viewingCart} onChange={() => setViewingCart(!viewingCart)} />
+
+        <ProductList viewingCart={viewingCart} loading={loading} products={products} />
+
+        <Paginator currentPage={currentPage} setCurrentPage={setCurrentPage} numPages={numPages} totalResults={S.fromMaybe(0)(dataCount)} />
+
+        <Totalizer viewingCart={viewingCart} setViewingCart={setViewingCart} total={"R$ 100.099,35"} />
+        </>
+      )}
+
+      {/* <h1>Next.js and Auth0 Example</h1>
 
       {loading && <p>Loading login info...</p>}
 
@@ -29,9 +79,20 @@ function Home() {
           <p>nickname: {user.nickname}</p>
           <p>name: {user.name}</p>
         </>
-      )}
+      )} */}
     </Layout>
   )
 }
 
 export default Home
+
+export const getStaticProps = async () => {
+  const res = await fetch(`http://localhost:9000/api/products/`)
+  const products = await res.json()
+
+  return {
+    props: {
+      products
+    }
+  }
+}
