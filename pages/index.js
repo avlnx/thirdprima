@@ -5,6 +5,7 @@ import {
   Button,
   Card,
   Heading,
+  LockIcon,
   majorScale,
   Pane,
   PersonIcon,
@@ -47,9 +48,14 @@ function Home({ products }) {
       {!loading && !user && (
         <Pane display="flex" height="100vh" alignItems="center" justifyContent="center" >
           <Card flexBasis={300} background={brand} elevation={4} padding={ majorScale (3) } display="flex" flexDirection="column">
-            <Heading color={ "white" } size={200} marginBottom={majorScale(2)}>
-              PRIMA
-              </Heading>
+            <Pane display="flex" >
+              <LockIcon color={ S.prop ("lightest") (palette) } marginRight={ majorScale (1) } /> 
+              <Heading color={ "white" } size={200} 
+                marginBottom={majorScale(2)}>
+                PRIMA
+                </Heading>
+            </Pane>
+            
             
               <Button intent="success" as="a" href="/api/login" iconAfter={<PersonIcon />}  flex={1} height={ 32 } justifyContent="end" alignItems="center">
                 Iniciar Sessão
