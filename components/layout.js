@@ -28,7 +28,7 @@ import Totalizer from './totalizer'
 
 const S = require('sanctuary')
 
-function Layout({ user, loading = false, children, products }) {
+const Layout = ({ user, loading = false, children, products, hideHeader }) => {
   const [viewingCart, setViewingCart] = useState(false)
   const [currentPage, setCurrentPage] = useState(1) // start at page 1
   const [query, setQuery] = useState('') // start "not searching"
@@ -53,7 +53,7 @@ function Layout({ user, loading = false, children, products }) {
 
       <Pane display="flex" flexDirection="column" height="100vh" background={S.props(["colors", "background", "purpleTint"])(primaTheme)}>
 
-        <Header user={ user } loading={ loading } />
+        {!hideHeader && <Header user={ user } loading={ loading } />}
 
         {/* Api Errors */}
         {/* {error && <Pane margin={majorScale(2)}>

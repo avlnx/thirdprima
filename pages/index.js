@@ -3,14 +3,22 @@ import Layout from '../components/layout'
 import { useFetchUser } from '../lib/user'
 import {
   Button,
-  Spinner
+  Card,
+  Heading,
+  majorScale,
+  Pane,
+  PersonIcon,
+  Small,
+  Spinner,
+  Text,
 } from "evergreen-ui"
 import BlockSwitch from "../components/switch"
 import ProductList from "../components/productList"
 import Paginator from "../components/paginator"
 import Totalizer from "../components/totalizer"
+import { brand, primaTheme, palette } from "../theme"
 
-const S = require ("sanctuary")
+const S = require("sanctuary")
 
 function Home({ products }) {
   const { user, loading } = useFetchUser()
@@ -32,27 +40,37 @@ function Home({ products }) {
   const numPages = Math.ceil(S.maybe(0)(n => S.div(dataResultsCount)(n))(dataCount))
 
   return (
-    <Layout user={user} loading={loading}>
+    <Layout user={user} loading={loading} hideHeader={ true }>
 
       {loading && <Spinner />}
 
       {!loading && !user && (
-        <>
-          <p>
-            Seja bem vindo. Clique no botão para se autenticar. Você será brevemente redirecionado ao nosso serviço de autenticação Auth0. Finalizar o processo você será redirecionado novamente à Prima. <Button is="a" href="/api/login">Login</Button>
-          </p>
-        </>
+        <Pane display="flex" height="100vh" alignItems="center" justifyContent="center" >
+          <Card flexBasis={300} background={brand} elevation={4} padding={ majorScale (3) } display="flex" flexDirection="column">
+            <Heading color={ "white" } size={200} marginBottom={majorScale(2)}>
+              PRIMA
+              </Heading>
+            
+              <Button intent="success" as="a" href="/api/login" iconAfter={<PersonIcon />}  flex={1} height={ 32 } justifyContent="end" alignItems="center">
+                Iniciar Sessão
+            </Button>
+            <Text marginTop={majorScale(3)} color={ S.prop ("lightest") (palette)}>
+              <Small >Você será brevemente redirecionado ao nosso parceiro especialista de autenticação Auth0.<br /> Nos vemos na volta.</Small>
+            </Text>
+            
+          </Card>
+        </Pane>
       )}
 
       {user && (
         <>
-        <BlockSwitch checked={viewingCart} onChange={() => setViewingCart(!viewingCart)} />
+          <BlockSwitch checked={viewingCart} onChange={() => setViewingCart(!viewingCart)} />
 
-        <ProductList viewingCart={viewingCart} loading={loading} products={products} />
+          <ProductList viewingCart={viewingCart} loading={loading} products={products} />
 
-        <Paginator currentPage={currentPage} setCurrentPage={setCurrentPage} numPages={numPages} totalResults={S.fromMaybe(0)(dataCount)} />
+          <Paginator currentPage={currentPage} setCurrentPage={setCurrentPage} numPages={numPages} totalResults={S.fromMaybe(0)(dataCount)} />
 
-        <Totalizer viewingCart={viewingCart} setViewingCart={setViewingCart} total={"R$ 100.099,35"} />
+          <Totalizer viewingCart={viewingCart} setViewingCart={setViewingCart} total={"R$ 100.099,35"} />
         </>
       )}
 
