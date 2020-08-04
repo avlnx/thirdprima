@@ -26,8 +26,9 @@ export const lastItemInUrl = S.pipe([
     S.fromMaybe("erro"),
 ])
 
-
 const ProductRow = ({ product, sources, viewingCart, quantity }) => {
+
+    const id = S.prop ("id")
 
     // // Array of objects predicate
     const arrayOfObjects = S.is ($.Array ($.Object))
@@ -37,42 +38,28 @@ const ProductRow = ({ product, sources, viewingCart, quantity }) => {
     const flatVariants = S.fromMaybe ([]) (variants)
 
     // variantsUrl :: Object -> Maybe String
-    const variantsId = S.get (S.is ($.String)) ("id")
+    const getId = S.get (S.is ($.String)) ("id")
 
-    // generalized above to maybeProp :)
-    // const maybeProp = S.get (_ => true)
+    const firstVariantsId = S.get (_ => true) ("id") (S.fromMaybe ({}) (S.head (flatVariants)))
 
-    const firstVariantsId = S.pipe([
-        S.head,
-        S.chain (variantsId),
-    ])
+    const [ selectedVariant, setSelectedVariant ] = useState(S.maybeToNullable (firstVariantsId))
 
-    const [selectedVariant, setSelectedVariant] = useState (S.fromMaybe ("ERRO: Produto sem nenhuma variaćão. Ignore por favor.") (firstVariantsId(flatVariants)))
+    // const getFlatVariantWithIdFromList = id => S.pipe ([
+    //     getVariantWithIdFromList (id),
+    //     S.maybeToNullable    // we get a from nullable here because we want this to explode, it shouldnt happen. if we let it slide it gets hard to track down the line. this means we should strategecally fail.
+    // ])
 
-    // :: String -> Maybe Object
-    const getVariantWithIdFromList = id => S.pipe ([
-        S.filter (v => S.equals (S.Just (id)) (variantsId (v))),
-        S.head,
-    ])
+    // getVariantWithIdFromList :: String -> Array (Object) -> Maybe (Object)
+    const getVariantWithIdFromList = variantId => S.find (v => S.equals (id (v))(variantId))
 
-    const getFlatVariantWithIdFromList = id => S.pipe ([
-        getVariantWithIdFromList (id),
-        S.fromMaybe ({})
-    ])
+    const selected = S.fromMaybe ({}) (getVariantWithIdFromList (selectedVariant) (flatVariants))
 
-    const loadFlatSelectedVariantObject = id => getFlatVariantWithIdFromList (id) (flatVariants)
+    // const source = S.get (S.is ($.String)) ("source") (selected)
 
-    const selectedVariantObject = loadFlatSelectedVariantObject (selectedVariant)
-
-    // findSourceNameById :: String -> String
-    // const findSourceNameById = id => S.snd (S.fromMaybe (S.Pair ("erro") ("não encontrado")) (findSourceById (id) (sources)))
-
-    // const findSourceNameFromVariant = v => findSourceNameById (lastItemInUrl (S.prop ("source") (v)))
-
-    const source = S.get (S.is ($.String)) ("source") (selectedVariantObject)
+    const source = S.map (S.prop ("source")) (S.Just (selected))
 
     return (
-        <Table.Row display="flex" key={S.prop("id")(product)} height="auto" padding={majorScale(1)} flexWrap="wrap" backgroundColor={viewingCart ? S.props(["palette", "blue", "lightest"])(primaTheme) : "white"}>
+        <Table.Row display="flex" key={id (product)} height="auto" padding={majorScale(1)} flexWrap="wrap" backgroundColor={viewingCart ? S.props(["palette", "blue", "lightest"])(primaTheme) : "white"}>
 
             {viewingCart && <Table.TextCell flexBasis={60} flexGrow={0} flexShrink={0}>
                 <Badge color="red">{quantity}</Badge>
@@ -82,10 +69,10 @@ const ProductRow = ({ product, sources, viewingCart, quantity }) => {
                 <Heading size={500} whiteSpace="normal">{S.prop("label")(product)}</Heading>
             </Table.TextCell>
             <Table.TextCell display="flex" flexBasis={380} paddingY={majorScale(1)}>
-                {S.isNothing(source) && false 
+                {S.isNothing(source) 
                     ? (<Alert
                         intent="danger"
-                        title="Ops. Algo está errado com este produto."
+                        title="Ops. Algo está errado com este produto mate."
                     />)
                     : !viewingCart ? (
                         <Popover
@@ -94,13 +81,13 @@ const ProductRow = ({ product, sources, viewingCart, quantity }) => {
                                     <Table.Head>
                                         <Table.TextCell>
                                             Escolha o melhor
-                          </Table.TextCell>
+                                        </Table.TextCell>
                                     </Table.Head>
                                     <Table.Body>
                                         {S.map (v =>
-                                            <Table.Row key={S.prop("id")(v)} isSelectable onSelect={() => {
+                                            <Table.Row key={id (v)} isSelectable onSelect={() => {
                                                 close()
-                                                setSelectedVariant(S.prop("id")(v))
+                                                setSelectedVariant(id (v))
                                             }}>
                                                 <Variant variant={v} sources={sources} />
                                             </Table.Row>
@@ -109,10 +96,10 @@ const ProductRow = ({ product, sources, viewingCart, quantity }) => {
                                 </Table>
                             )}>
                             <Button iconAfter={CaretDownIcon}>
-                                <Variant variant={selectedVariantObject} sources={sources} />
+                                <Variant variant={selected} sources={sources} />
                             </Button>
                         </Popover>)
-                        : (<Variant variant={selectedVariantObject} sources={sources} />)
+                        : (<Variant variant={selected} sources={sources} />)
                 }
             </Table.TextCell>
             <Table.TextCell flexBasis={150} paddingY={majorScale(1)}>
