@@ -18,11 +18,7 @@ function Home({ products, sources }) {
   const productList = S.get(_ => true) ("products") (products)
   const sourceList = S.get(_ => true) ("sources") (sources)
 
-  // const [currentPage, setCurrentPage] = useState(1)
-
   const [query, setQuery] = useState('')
-
-  const [viewingCart, setViewingCart] = useState(false)
 
   return (
     <Layout user={user} loading={loading} hideHeader={!loading && !user }>
@@ -33,40 +29,11 @@ function Home({ products, sources }) {
 
       {user && (
         <>
-          <BlockSwitch checked={viewingCart} onChange={() => setViewingCart(!viewingCart)} />
+          <ProductList loading={loading} products={ S.fromMaybe ([]) (productList) } sources={ S.fromMaybe ([]) (sourceList) } />
 
-          <ProductList viewingCart={viewingCart} loading={loading} products={ S.fromMaybe ([]) (productList) } sources={ S.fromMaybe ([]) (sourceList) } />
-
-          {/* <Paginator currentPage={currentPage} setCurrentPage={setCurrentPage} numPages={numPages} totalResults={S.fromMaybe(0)(dataCount)} /> */}
-
-          <Totalizer viewingCart={viewingCart} setViewingCart={setViewingCart} total={"R$ 100.099,35"} />
+          <Totalizer viewingCart={false} total={"R$ 100.099,35"} />
         </>
       )}
-
-      {/* <h1>Next.js and Auth0 Example</h1>
-
-      {loading && <p>Loading login info...</p>}
-
-      {!loading && !user && (
-        <>
-          <p>
-            To test the login click in <i>Login</i>
-          </p>
-          <p>
-            Once you have logged in you should be able to click in{' '}
-            <i>Profile</i> and <i>Logout</i>
-          </p>
-        </>
-      )}
-
-      {user && (
-        <>
-          <h4>Rendered user info on the client</h4>
-          <img src={user.picture} alt="user picture" />
-          <p>nickname: {user.nickname}</p>
-          <p>name: {user.name}</p>
-        </>
-      )} */}
     </Layout>
   )
 }

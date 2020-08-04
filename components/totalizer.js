@@ -7,12 +7,12 @@ import {
     majorScale,
     Pane,
 } from "evergreen-ui"
-
+import Link from "next/link"
 import { primaTheme } from "../theme"
 
 const S = require ("sanctuary")
 
-const Totalizer = ({ viewingCart, total, setViewingCart }) => {
+const Totalizer = ({ viewingCart, total }) => {
     return <Card elevation={1} margin={majorScale(2)} padding={majorScale(2)} display="flex" alignItems="center" justifyContent="space-between" background={"white"}>
         <Pane display="flex" alignItems="center">
             <Badge color="purple" marginRight={majorScale(1)}>Total</Badge>
@@ -21,7 +21,7 @@ const Totalizer = ({ viewingCart, total, setViewingCart }) => {
         {viewingCart
             ?
             <Pane display="flex" alignItems="center">
-                <Button marginRight={majorScale(1)} appearance="minimal" intent="danger" onClick={() => setViewingCart(false)}>Cancelar</Button>
+                <Link href="/" style={{ color: "red", marginRight: majorScale (2)}}>Sair</Link>
                 <Button height={48} appearance="primary" intent="success" onClick={() => alert("promote this bitch")} iconAfter={ArrowRightIcon}>Confirmar pedido
               </Button>
             </Pane>
