@@ -2,79 +2,47 @@ import { useState } from "react"
 import Layout from '../components/layout'
 import { useFetchUser } from '../lib/user'
 import {
-  Button,
-  Card,
-  Heading,
-  LockIcon,
-  majorScale,
-  Pane,
-  PersonIcon,
-  Small,
   Spinner,
-  Text,
 } from "evergreen-ui"
 import BlockSwitch from "../components/switch"
 import ProductList from "../components/productList"
 import Paginator from "../components/paginator"
 import Totalizer from "../components/totalizer"
-import { brand, primaTheme, palette } from "../theme"
+import LoginBox from "../components/loginBox"
 
 const S = require("sanctuary")
+const $ = require ("sanctuary-def")
 
-function Home({ products }) {
-  const { user, loading } = useFetchUser()
+function Home({ products, sources }) {
+  // const { user, loading } = useFetchUser()
+  const productList = S.get(_ => true) ("products") (products)
+  const sourceList = S.get(_ => true) ("sources") (sources)
+
+  // console.log("products in Home", products)
+  const { user, loading }  = {
+    user: {"name": "Thyago", "email": "tdasilva@tuta.io"}, loading: false
+  }
+
   const [currentPage, setCurrentPage] = useState(1) // start at page 1
+
   const [query, setQuery] = useState('') // start "not searching"
 
   const [viewingCart, setViewingCart] = useState(false)
 
-  const apiEndpointGivenCurrentState = `http://localhost:9000/api/products/?page=${currentPage}${query ? "&search=" + query : ''}`
-
-  // const { data, error } = useSWR ([apiEndpointGivenCurrentState, token], tokenFetcher, {"shouldRetryOnError": false})
-
-  const getCount = S.get(_ => true)("count")
-  const dataCount = getCount(products)  // Maybe(1000)
-
-  const getResults = S.get(_ => true)("results")
-  const dataResultsCount = S.maybe(0)(S.size)(getResults(products))  // 0 or 50 for example
-
-  const numPages = Math.ceil(S.maybe(0)(n => S.div(dataResultsCount)(n))(dataCount))
-
   return (
-    <Layout user={user} loading={loading} hideHeader={ true }>
+    <Layout user={user} loading={loading} hideHeader={!loading && !user }>
 
-      {loading && <Spinner />}
+      {/* {loading && <Spinner />}
 
-      {!loading && !user && (
-        <Pane display="flex" height="100vh" alignItems="center" justifyContent="center" >
-          <Card flexBasis={300} background={brand} elevation={4} padding={ majorScale (3) } display="flex" flexDirection="column">
-            <Pane display="flex" >
-              <LockIcon color={ S.prop ("lightest") (palette) } marginRight={ majorScale (1) } /> 
-              <Heading color={ "white" } size={200} 
-                marginBottom={majorScale(2)}>
-                PRIMA
-                </Heading>
-            </Pane>
-            
-            
-              <Button intent="success" as="a" href="/api/login" iconAfter={<PersonIcon />}  flex={1} height={ 32 } justifyContent="end" alignItems="center">
-                Iniciar Sessão
-            </Button>
-            <Text marginTop={majorScale(3)} color={ S.prop ("lightest") (palette)}>
-              <Small >Você será brevemente redirecionado ao nosso parceiro especialista de autenticação Auth0.<br /> Nos vemos na volta.</Small>
-            </Text>
-            
-          </Card>
-        </Pane>
-      )}
+      {!loading && !user && <LoginBox />} */}
 
       {user && (
         <>
           <BlockSwitch checked={viewingCart} onChange={() => setViewingCart(!viewingCart)} />
 
-          <ProductList viewingCart={viewingCart} loading={loading} products={products} />
+          <ProductList viewingCart={viewingCart} loading={loading} products={ S.fromMaybe ([]) (productList) } sources={ S.fromMaybe ([]) (sourceList) } />
 
-          <Paginator currentPage={currentPage} setCurrentPage={setCurrentPage} numPages={numPages} totalResults={S.fromMaybe(0)(dataCount)} />
+          {/* <Paginator currentPage={currentPage} setCurrentPage={setCurrentPage} numPages={numPages} totalResults={S.fromMaybe(0)(dataCount)} /> */}
 
           <Totalizer viewingCart={viewingCart} setViewingCart={setViewingCart} total={"R$ 100.099,35"} />
         </>
@@ -110,13 +78,20 @@ function Home({ products }) {
 
 export default Home
 
-export const getStaticProps = async () => {
-  const res = await fetch(`http://localhost:9000/api/products/`)
+export const getServerSideProps = async (context) => {
+  // console.log("context", context.query)
+  const res = await fetch(`http://localhost:3000/api/products/`)
   const products = await res.json()
+  // console.log("products props", products)
+
+  const resSources = await fetch(`http://localhost:3000/api/sources/`)
+  const sources = await resSources.json()
+  // console.log("sources props", sources)
 
   return {
     props: {
-      products
+      products,
+      sources,
     }
   }
 }

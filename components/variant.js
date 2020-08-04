@@ -8,15 +8,14 @@ import {
     Strong,
     Text
 } from "evergreen-ui"
-import { findSourceNameById, lastItemInUrl } from "./productRow"
 
 const S = require("sanctuary")
 const $ = require("sanctuary-def")
 
 const Variant = ({ variant, sources }) => {
-    const url = S.prop("url")
+    const url = S.prop ("url")
     const sourceUrl = S.prop ("source") (variant)
-    const source = S.find (s => S.equals (url (s)) (sourceUrl)) (sources)
+    const source = S.find(s => S.equals(url(s))(sourceUrl))(S.fromMaybe([])(sources))
 
     return (
         S.isNothing(source)

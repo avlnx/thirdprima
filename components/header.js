@@ -16,8 +16,8 @@ function Header({ user, loading }) {
       {authenticated &&
         <>
           <Heading size={100} color={S.prop("base")(palette)}>Olá {S.fromMaybe("")(S.get(_ => true)("name")(user))}</Heading>
-          <Button style={S.prop("primaryButton")(primaTheme)} height={24} onClick={() => setViewingCart(!viewingCart)} iconAfter={ShoppingCartIcon}>
-            Carrinho</Button>
+          {/* <Button style={S.prop("primaryButton")(primaTheme)} height={24} onClick={() => setViewingCart(!viewingCart)} iconAfter={ShoppingCartIcon}>
+            Carrinho</Button> */}
         </>
       }
     </Pane>

@@ -13,15 +13,7 @@ import { primaTheme } from "../theme"
 const S = require ("sanctuary")
 const $ = require ("sanctuary-def")
 
-// const sources = [
-//     S.Pair("1")("JRG Alimentos"),
-//     S.Pair("2")("JTC Distribuidora"),
-//     S.Pair("3")("R Moura"),
-//     S.Pair("4")("Elmar"),
-// ]
-
 const ProductList = ({ viewingCart, loading, products, sources }) => {
-    const safeProducts = S.get (S.is ($.Array ($.Object))) ("results") (products)
     
     return (
         <Card elevation={1} margin={majorScale(2)} padding={0} flex="1" overflowY="auto" background="white">
@@ -41,7 +33,7 @@ const ProductList = ({ viewingCart, loading, products, sources }) => {
                             <Spinner />
                         </Pane>)
                         : (S.unchecked.map (product => (
-                            <ProductRow quantity={2} viewingCart={viewingCart} product={product} key={S.prop("url")(product)} sources={sources} />)) (S.fromMaybe ([]) (safeProducts)))}
+                            <ProductRow quantity={2} viewingCart={viewingCart} product={product} key={S.prop("id")(product)} sources={sources} />)) (products))}
                 </Table.Body>
             </Table>
         </Card>
@@ -49,46 +41,3 @@ const ProductList = ({ viewingCart, loading, products, sources }) => {
 }
 
 export default ProductList
-
-export const getStaticProps = async () => {
-    const res = await fetch(`http://localhost:9000/api/sources/`)
-    const sources = await res.json()
-
-    const safeSources = S.get (S.is ($.Array ($.Object))) ("results") (sources)
-
-    const returnSources = S.fromMaybe ([]) (safeSources)
-
-    const staticSources = {
-        "count": 4,
-        "next": null,
-        "previous": null,
-        "results": [
-            {
-                "url": "http://localhost:9000/api/sources/1/",
-                "label": "JRG Alimentos",
-                "symbol": "jrga"
-            },
-            {
-                "url": "http://localhost:9000/api/sources/2/",
-                "label": "JTC Distribuidora",
-                "symbol": "jtcd"
-            },
-            {
-                "url": "http://localhost:9000/api/sources/3/",
-                "label": "RMoura",
-                "symbol": "rmoura"
-            },
-            {
-                "url": "http://localhost:9000/api/sources/4/",
-                "label": "Elmar",
-                "symbol": "elmar"
-            }
-        ]
-    }
-
-    return {
-        props: {
-            sources: staticSources
-        }
-    }
-}
