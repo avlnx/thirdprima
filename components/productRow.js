@@ -13,7 +13,6 @@ import {
     Popover,
     Table,
 } from 'evergreen-ui'
-import { primaTheme } from "../theme"
 import Variant from "./variant"
 
 const S = require("sanctuary")
@@ -37,29 +36,19 @@ const ProductRow = ({ product, sources, viewingCart, quantity }) => {
     const variants = S.get (arrayOfObjects) ("variants") (product)
     const flatVariants = S.fromMaybe ([]) (variants)
 
-    // variantsUrl :: Object -> Maybe String
-    const getId = S.get (S.is ($.String)) ("id")
-
     const firstVariantsId = S.get (_ => true) ("id") (S.fromMaybe ({}) (S.head (flatVariants)))
 
     const [ selectedVariant, setSelectedVariant ] = useState(S.maybeToNullable (firstVariantsId))
-
-    // const getFlatVariantWithIdFromList = id => S.pipe ([
-    //     getVariantWithIdFromList (id),
-    //     S.maybeToNullable    // we get a from nullable here because we want this to explode, it shouldnt happen. if we let it slide it gets hard to track down the line. this means we should strategecally fail.
-    // ])
 
     // getVariantWithIdFromList :: String -> Array (Object) -> Maybe (Object)
     const getVariantWithIdFromList = variantId => S.find (v => S.equals (id (v))(variantId))
 
     const selected = S.fromMaybe ({}) (getVariantWithIdFromList (selectedVariant) (flatVariants))
 
-    // const source = S.get (S.is ($.String)) ("source") (selected)
-
     const source = S.map (S.prop ("source")) (S.Just (selected))
 
     return (
-        <Table.Row display="flex" key={id (product)} height="auto" padding={majorScale(1)} flexWrap="wrap" backgroundColor={viewingCart ? S.props(["palette", "blue", "lightest"])(primaTheme) : "white"}>
+        <Table.Row display="flex" key={id (product)} height="auto" padding={majorScale(1)} flexWrap="wrap" backgroundColor={"white"}>
 
             {viewingCart && <Table.TextCell flexBasis={60} flexGrow={0} flexShrink={0}>
                 <Badge color="red">{quantity}</Badge>

@@ -8,7 +8,7 @@ import {
     Spinner,
 } from "evergreen-ui"
 import ProductRow from "./productRow.js"
-import { primaTheme } from "../theme"
+import { primaTheme, brand } from "../theme"
 
 const S = require ("sanctuary")
 const $ = require ("sanctuary-def")
@@ -18,12 +18,13 @@ const ProductList = ({ viewingCart, loading, products, sources }) => {
     return (
         <Card elevation={1} margin={majorScale(2)} padding={0} flex="1" overflowY="auto" background="white">
             <Table>
-                <Table.Head style={viewingCart ? { "background": "#1070CA" } : undefined} >
+                <Table.Head style={viewingCart ? { "background": brand } : undefined} >
                     {!viewingCart
                         ? (<Table.SearchHeaderCell placeholder="Busque por nome" onChange={(v) => setQuery(v)} />)
                         : (<Table.TextHeaderCell >
-                            <ShoppingCartIcon size={20} color="white" />
-                            <Text size={300} marginLeft={majorScale(1)} textTransform="uppercase" color={S.props(["palette", "blue", "lightest"])(primaTheme)}>Visualizando o carrinho</Text>
+                            
+                            <Text size={300} textTransform="uppercase" color={S.props(["palette", "blue", "lightest"])(primaTheme)}>Seu carrinho</Text>
+                            <ShoppingCartIcon size={16} color="white" marginLeft={ majorScale (1) } />
                         </Table.TextHeaderCell>
                         )}
                 </Table.Head>
