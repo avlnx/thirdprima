@@ -32,9 +32,9 @@ function Home({ products, sources }) {
   return (
     <Layout user={user} loading={loading} hideHeader={!loading && !user }>
 
-      {/* {loading && <Spinner />}
+      {loading && <Spinner />}
 
-      {!loading && !user && <LoginBox />} */}
+      {!loading && !user && <LoginBox />}
 
       {user && (
         <>
@@ -78,7 +78,7 @@ function Home({ products, sources }) {
 
 export default Home
 
-export const getServerSideProps = async (context) => {
+export const getStaticProps = async (context) => {
   // console.log("context", context.query)
   const res = await fetch(`http://localhost:3000/api/products/`)
   const products = await res.json()
