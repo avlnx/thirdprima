@@ -24,9 +24,29 @@ handler.get(async (req, res) => {
   const latestCart = S.fromMaybe ({...initialCart}) (S.head (cart))
 
   // parse into a list of products with a list of variants, like /api/products
+  // const items = S.get (_ => true) ("items") (latestCart)
+  // const itemIds = S.keys (S.fromMaybe ({}) (items))
+  // const intItemIds = S.map (S.parseInt (10)) (itemIds)
 
+  const intItemIds = S.pipe ([
+    S.get (_ => true) ("items"),
+    S.fromMaybe({}),
+    S.keys,
+    S.map(S.parseInt(10)),
+    S.map (S.fromMaybe (-1))  // ids should parse but you know
+  ]) (latestCart)
 
-  res.status(200).json({ cart: latestCart });
+  // var ids = ['512d5793abb900bf3e20d012', '512d5793abb900bf3e20d011'];
+  // var obj_ids = ids.map(function (id) { return ObjectId(id); });
+  const query = { id: { $in: intItemIds } }
+  const options = {
+    projection: {id: 1, label: 1, variants: 1}
+  }
+
+  const itemsInCart = await req.db.collection('products').find(query, options).toArray(); // TODO: change id to _id after clean
+  console.log(itemsInCart)
+
+  res.status(200).json({ cart: latestCart, items: itemsInCart });
 });
 
 const getNextCart = mutation => lastCart => {
