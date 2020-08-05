@@ -54,6 +54,7 @@ const ProductRow = ({ product, sources, viewingCart, quantity, userId }) => {
             body: JSON.stringify ({
                 delta: delta,
                 variantId: `${selectedVariant}`,
+                productId: `${S.prop ("id") (product)}`,
                 owner: userId,
             })
         })

@@ -43,8 +43,14 @@ handler.get(async (req, res) => {
     projection: {id: 1, label: 1, variants: 1}
   }
 
+  // TODO: fix below, we are querying products with the variant ids,
+  // we need to restructure to contain the productId
   const itemsInCart = await req.db.collection('products').find(query, options).toArray(); // TODO: change id to _id after clean
   console.log(itemsInCart)
+
+  // const cartTotal = S.pipe ([
+  //   S.map (S.prop (""))
+  // ]) ()
 
   res.status(200).json({ cart: latestCart, items: itemsInCart });
 });
@@ -69,32 +75,22 @@ const getNextCart = mutation => lastCart => {
     ? (S.insert(variantId)(newQuantity)(oldItems))
     : (S.remove(variantId))(oldItems)
 
-  // const newItems = S.when(S.gt(0))
-
-  // const newItems = S.insert (variantId) (newQuantity) (S.fromMaybe ({}) (oldItems)) // {65: 1}
-
-
-  // const finalItems = S.when(S.props(["items", variantId])(newItems) <= 0) 
-  //   (S.remove (variantId)) (newItems)
-
   return {
+    
     owner: S.prop("owner")(fMutation),
     created: new Date(),
     items: nextItems,
   }
 }
 
-// const getLastCart = async carts => carts.find({}).sort({ _id: -1 }).limit(1);
-// findOne({ $query: {}, $orderby: { $natural: -1 } })
-// carts.find().skip(carts.count() - 1).toArray()
 const getLatestCart = async carts => carts.find({}).sort({ "_id": -1 }).limit(1).toArray()
-
 
 handler.post(async (req, res) => {
   // insert and return new cart state for this user
   const mutation = S.parseJson(S.is($.Object))(S.prop("body")(req))
 
-  // get last cart
+  // get last cart TODO: send in from post so we don't need to query this
+  // remember, this needs to be FAST, we run it for every "add to cart" click
   const carts = await req.db.collection('carts')
   const lastCart = await carts.find({}).sort({ "_id": -1 }).limit(1).toArray()
 
