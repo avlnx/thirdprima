@@ -1,6 +1,5 @@
 import nextConnect from 'next-connect';
 import middleware from '../../middleware/database';
-import { last } from 'sanctuary';
 import next from 'next';
 
 const handler = nextConnect();
@@ -8,23 +7,26 @@ const handler = nextConnect();
 const S = require("sanctuary")
 const $ = require("sanctuary-def")
 
+const initialCart = {
+  owner: null,
+  created: new Date(),
+  items: {}
+}
+
 handler.use(middleware);
 
 handler.get(async (req, res) => {
   const carts = await req.db.collection('carts')
 
-  const cart = await getLastCart(carts)
+  const cart = await getLatestCart (carts)
 
   // get latest cart
+  const latestCart = S.fromMaybe ({...initialCart}) (S.head (cart))
 
   // parse into a list of products with a list of variants, like /api/products
 
-  // append the current cartState so the user only appends a migration to it and post
 
-  // console.log("Products", products)
-
-  // console.log(collection);
-  res.status(200).json({ cart });
+  res.status(200).json({ cart: latestCart });
 });
 
 const getNextCart = mutation => lastCart => {
@@ -65,6 +67,7 @@ const getNextCart = mutation => lastCart => {
 // const getLastCart = async carts => carts.find({}).sort({ _id: -1 }).limit(1);
 // findOne({ $query: {}, $orderby: { $natural: -1 } })
 // carts.find().skip(carts.count() - 1).toArray()
+const getLatestCart = async carts => carts.find({}).sort({ "_id": -1 }).limit(1).toArray()
 
 
 handler.post(async (req, res) => {
@@ -77,18 +80,17 @@ handler.post(async (req, res) => {
 
   const maybeOwner = S.map(S.prop("owner"))(mutation)
 
-  const initialCart = {
+  const seedCart = {
+    ...initialCart,
     owner: S.fromMaybe("")(maybeOwner),
-    created: new Date(),
-    items: {}
   }
 
-  const previousCart = S.fromMaybe(initialCart)(S.head(lastCart))
+  const previousCart = S.fromMaybe(seedCart)(S.head(lastCart))
 
   const nextCart = getNextCart(mutation)(previousCart)
     // const nextCart = getNextCart (lastCart) (mutation)
 
-  S.isJust(mutation) ? await carts.insert(nextCart) : null
+  S.isJust(mutation) ? await carts.insertOne(nextCart) : null
   // const finalCart = S.when (S.isJust (mutation)) (await carts.insert (nextCart))
 
   // console.log(collection);

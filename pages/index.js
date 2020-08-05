@@ -13,10 +13,12 @@ import LoginBox from "../components/loginBox"
 const S = require("sanctuary")
 const $ = require ("sanctuary-def")
 
-function Home({ products, sources }) {
+function Home({ products, sources, cart }) {
   const { user, loading } = useFetchUser()
   const productList = S.get(_ => true) ("products") (products)
   const sourceList = S.get(_ => true) ("sources") (sources)
+
+  console.log("cart", cart)
 
   const [query, setQuery] = useState('')
 
@@ -50,10 +52,14 @@ export const getStaticProps = async (context) => {
   const sources = await resSources.json()
   // console.log("sources props", sources)
 
+  const cartRes = await fetch(`http://localhost:3000/api/cart/`)
+  const cart = await cartRes.json()
+
   return {
     props: {
       products,
       sources,
+      cart,
     }
   }
 }
