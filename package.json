@@ -11,6 +11,7 @@
     "@auth0/nextjs-auth0": "^0.6.0",
     "dotenv": "^8.2.0",
     "evergreen-ui": "^4.29.1",
+    "isomorphic-unfetch": "^3.0.0",
     "mongodb": "^3.6.0",
     "next": "latest",
     "next-connect": "^0.8.1",

@@ -9,11 +9,14 @@ import {
 } from "evergreen-ui"
 import ProductRow from "./productRow.js"
 import { primaTheme, brand } from "../theme"
+import { useFetchUser } from '../lib/user'
 
 const S = require ("sanctuary")
 const $ = require ("sanctuary-def")
 
 const ProductList = ({ viewingCart, loading, products, sources }) => {
+
+    const { user, loadingUser } = useFetchUser()
     
     return (
         <>
@@ -35,7 +38,7 @@ const ProductList = ({ viewingCart, loading, products, sources }) => {
                                 <Spinner />
                             </Pane>)
                             : (S.unchecked.map (product => (
-                                <ProductRow quantity={2} viewingCart={viewingCart} product={product} key={S.prop("id")(product)} sources={sources} />)) (products))}
+                                <ProductRow userId={ S.prop ("sub") (user) } quantity={2} viewingCart={viewingCart} product={product} key={S.prop("id")(product)} sources={sources} />)) (products))}
                     </Table.Body>
                 </Table>
             </Card>

@@ -19,5 +19,7 @@ export const primaTheme = {
     backgroundColor: brand,
     backgroundImage: "none",
     color: S.prop("lightest")(palette),
+    paddingX: majorScale (2),
+    paddingY: majorScale (1),
   }
 }

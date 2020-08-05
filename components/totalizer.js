@@ -1,34 +1,38 @@
 import {
-    ArrowRightIcon,
-    Badge,
-    Button,
-    Card,
-    Heading,
-    majorScale,
-    Pane,
+  ArrowRightIcon,
+  Badge,
+  Button,
+  Card,
+  defaultTheme,
+  Heading,
+  majorScale,
+  Pane,
+  ShoppingCartIcon,
 } from "evergreen-ui"
 import Link from "next/link"
 import { primaTheme } from "../theme"
-
-const S = require ("sanctuary")
+const S = require("sanctuary")
 
 const Totalizer = ({ viewingCart, total }) => {
-    return <Card elevation={1} margin={majorScale(2)} padding={majorScale(2)} display="flex" alignItems="center" justifyContent="space-between" background={"white"}>
-        <Pane display="flex" alignItems="center">
-            <Badge color="purple" marginRight={majorScale(1)}>Total</Badge>
-            <Heading size={500}>{ total }</Heading>
-        </Pane>
-        {viewingCart
-            ?
-            <Pane display="flex" alignItems="center">
-                <Link href="/" style={{ color: "red", marginRight: majorScale (2)}}>Sair</Link>
-                <Button height={48} appearance="primary" intent="success" onClick={() => alert("promote this bitch")} iconAfter={ArrowRightIcon}>Confirmar pedido
-              </Button>
-            </Pane>
-            :
-            <Button style={S.prop("primaryButton")(primaTheme)} height={48} onClick={() => setViewingCart(true)} iconAfter={ArrowRightIcon}>Visualizar carrinho.
-            </Button>}
-    </Card>
+  return <Card elevation={1} margin={majorScale(2)} padding={majorScale(2)} display="flex" alignItems="center" justifyContent="space-between" background={"white"}>
+    <Pane display="flex" alignItems="center">
+      <Badge color="purple" marginRight={majorScale(1)}>Total</Badge>
+      <Heading size={500}>{total}</Heading>
+    </Pane>
+    {viewingCart
+      ?
+      <Pane>
+        <Link href="/" style={{marginRight: 100, display: "block"}}>
+          <Button appearance="minimal" intent="danger">Cancelar</Button>
+        </Link>
+        <Button height={48} appearance="primary" style={S.prop("primaryButton")(primaTheme)}  onClick={() => alert("promote this bitch")} iconAfter={ArrowRightIcon}>Finalizar pedido</Button>
+      </Pane>
+      :
+      <Link href="/cart" >
+        <Button height={48} appearance="primary" style={S.prop ("primaryButton") (primaTheme)} iconAfter={ShoppingCartIcon}>Carrinho</Button>
+      </Link>
+    }
+  </Card>
 }
 
 export default Totalizer

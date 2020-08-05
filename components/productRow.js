@@ -14,6 +14,7 @@ import {
     Table,
 } from 'evergreen-ui'
 import Variant from "./variant"
+import "isomorphic-unfetch"
 
 const S = require("sanctuary")
 const $ = require("sanctuary-def")
@@ -25,7 +26,7 @@ export const lastItemInUrl = S.pipe([
     S.fromMaybe("erro"),
 ])
 
-const ProductRow = ({ product, sources, viewingCart, quantity }) => {
+const ProductRow = ({ product, sources, viewingCart, quantity, userId }) => {
 
     const id = S.prop ("id")
 
@@ -46,6 +47,18 @@ const ProductRow = ({ product, sources, viewingCart, quantity }) => {
     const selected = S.fromMaybe ({}) (getVariantWithIdFromList (selectedVariant) (flatVariants))
 
     const source = S.map (S.prop ("source")) (S.Just (selected))
+
+    const nextCartState = async (delta) => {
+        const res = await fetch("http://localhost:3000/api/cart", {
+            method: "post",
+            body: JSON.stringify ({
+                delta: delta,
+                variantId: `${selectedVariant}`,
+                owner: userId,
+            })
+        })
+        console.log("nextCart", res)
+    }
 
     return (
         <Table.Row display="flex" key={id (product)} height="auto" padding={majorScale(1)} flexWrap="wrap" backgroundColor={"white"}>
@@ -96,9 +109,10 @@ const ProductRow = ({ product, sources, viewingCart, quantity }) => {
                     display="flex"
                     alignItems="center"
                     justifyContent="space-between">
-                    <Button flex={"1"} appearance="minimal" intent="danger">remover</Button>
-                    <IconButton flex={"1"} icon={MinusIcon} />
-                    <IconButton flex={"1"} icon={PlusIcon} />
+                    <Button flex={"1"} appearance="minimal" onClick={() => nextCartState (-Infinity) } 
+                    intent="danger">remover</Button>
+                    <IconButton flex={"1"} onClick={ () => nextCartState (-1) } icon={MinusIcon} />
+                    <IconButton flex={"1"} onClick={ () => nextCartState (1) }  icon={PlusIcon} />
                 </Pane>
             </Table.TextCell>
         </Table.Row>
