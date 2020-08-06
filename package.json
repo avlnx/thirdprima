@@ -9,6 +9,7 @@
   "license": "MIT",
   "dependencies": {
     "@auth0/nextjs-auth0": "^0.6.0",
+    "btoa": "^1.2.1",
     "dotenv": "^8.2.0",
     "evergreen-ui": "^4.29.1",
     "isomorphic-unfetch": "^3.0.0",

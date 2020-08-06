@@ -44,6 +44,7 @@ export default Home
 
 export const getStaticProps = async (context) => {
   // console.log("context", context.query)
+  
   const res = await fetch(`http://localhost:3000/api/products/`)
   const products = await res.json()
   // console.log("products props", products)

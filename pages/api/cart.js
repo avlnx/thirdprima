@@ -16,17 +16,13 @@ const initialCart = {
 handler.use(middleware);
 
 handler.get(async (req, res) => {
+  // TODO: Filter by owner
   const carts = await req.db.collection('carts')
 
   const cart = await getLatestCart (carts)
 
   // get latest cart
   const latestCart = S.fromMaybe ({...initialCart}) (S.head (cart))
-
-  // parse into a list of products with a list of variants, like /api/products
-  // const items = S.get (_ => true) ("items") (latestCart)
-  // const itemIds = S.keys (S.fromMaybe ({}) (items))
-  // const intItemIds = S.map (S.parseInt (10)) (itemIds)
 
   const intItemIds = S.pipe ([
     S.get (_ => true) ("items"),
@@ -36,24 +32,23 @@ handler.get(async (req, res) => {
     S.map (S.fromMaybe (-1))  // ids should parse but you know
   ]) (latestCart)
 
-  // var ids = ['512d5793abb900bf3e20d012', '512d5793abb900bf3e20d011'];
-  // var obj_ids = ids.map(function (id) { return ObjectId(id); });
   const query = { id: { $in: intItemIds } }
   const options = {
     projection: {id: 1, label: 1, variants: 1}
   }
 
-  // TODO: fix below, we are querying products with the variant ids,
-  // we need to restructure to contain the productId
   const itemsInCart = await req.db.collection('products').find(query, options).toArray(); // TODO: change id to _id after clean
-  console.log(itemsInCart)
+  console.log("itemsInCart", itemsInCart)
 
   // const cartTotal = S.pipe ([
   //   S.map (S.prop (""))
   // ]) ()
 
-  res.status(200).json({ cart: latestCart, items: itemsInCart });
+  res.status(200).json({ cart: latestCart, products: itemsInCart });
 });
+
+// const get
+const makeInt = str => S.fromMaybe (-1) (S.parseInt (10) (str))
 
 const getNextCart = mutation => lastCart => {
 
@@ -61,25 +56,34 @@ const getNextCart = mutation => lastCart => {
 
   const fMutation = S.maybeToNullable(mutation)
 
-  const variantId = S.prop("variantId")(fMutation)
+  const variantId = makeInt (S.prop("variantId")(fMutation))
   const delta = S.prop("delta")(fMutation)
+  const productId = makeInt (S.prop("productId")(fMutation))
 
-  // const oldQuantity = S.fromMaybe(0)(S.unchecked.values (lastCart) (["items", variantId]))
-  const oldQuantity = S.gets(_ => true)(["items", variantId])(lastCart)
+  const oldQuantity = S.gets (S.is ($.Number)) (["items", productId, variantId])(lastCart)
+
+  console.log(oldQuantity)
 
   const newQuantity = S.fromMaybe(0)(oldQuantity) + delta
 
   const oldItems = S.fromMaybe({})(S.get(_ => true)("items")(lastCart))
 
-  const nextItems = newQuantity > 0
-    ? (S.insert(variantId)(newQuantity)(oldItems))
-    : (S.remove(variantId))(oldItems)
+  // productId should be a number for now
+  const productsItem = S.fromMaybe({})(S.get(_ => true) (productId) (oldItems))
+
+  const nextProductItems = newQuantity > 0
+    ? (S.insert (variantId) (newQuantity) (productsItem))
+    : (S.remove (variantId)) (productsItem)
+  
+  // now insert the new productItem into the items
+  const newItems = (S.gt(0) (S.size(nextProductItems)))
+    ? (S.insert (productId) (productsItem) (oldItems))
+    : (S.remove (productId) (oldItems))
 
   return {
-    
     owner: S.prop("owner")(fMutation),
     created: new Date(),
-    items: nextItems,
+    items: newItems,
   }
 }
 
