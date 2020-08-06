@@ -1,11 +1,13 @@
-import { MongoClient } from 'mongodb';
+// import { MongoClient } from 'mongodb';
 import nextConnect from 'next-connect';
+
+const { MongoClient } = require ("mongodb")
 
 const dbname = "seedr"
 
 const client = new MongoClient(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
+  validateOptions: true,
+  connectTimeoutMS: 5000,
 });
 
 async function database(req, res, next) {

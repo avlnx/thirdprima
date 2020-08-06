@@ -10,6 +10,9 @@ handler.get(async (req, res) => {
 
   const products = await collection.find().limit(2).toArray()
 
+  
+  const productsVariants = await req.db.collection('variants').find()
+
   // console.log("Products", products)
 
   // console.log(collection);
