@@ -14,8 +14,8 @@ const S = require("sanctuary")
 const $ = require ("sanctuary-def")
 
 function Home({ products, sources, cart }) {
-  // const { user, loading } = useFetchUser()
-  const { user, loading } = { user: { sub: "someId" }, loading: false }
+  const { user, loading } = useFetchUser()
+  // const { user, loading } = { user: { sub: "someId" }, loading: false }
   const productList = S.get(_ => true) ("products") (products)
   const sourceList = S.get(_ => true) ("sources") (sources)
 
