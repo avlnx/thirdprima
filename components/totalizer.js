@@ -8,13 +8,17 @@ import {
   majorScale,
   Pane,
   ShoppingCartIcon,
+  Spinner,
 } from "evergreen-ui"
 import Link from "next/link"
 import { primaTheme } from "../theme"
 const S = require("sanctuary")
 
-const Totalizer = ({ viewingCart, total }) => {
+const Totalizer = ({ viewingCart, total, loading }) => {
   return <Card elevation={1} margin={majorScale(2)} padding={majorScale(2)} display="flex" alignItems="center" justifyContent="space-between" background={"white"}>
+
+    {loading ? <Spinner /> : null}
+
     <Pane display="flex" alignItems="center">
       <Badge color="purple" marginRight={majorScale(1)}>Total</Badge>
       <Heading size={500}>{total}</Heading>

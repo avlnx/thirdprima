@@ -53,7 +53,7 @@ const Layout = ({ user, loading = false, children, products, hideHeader }) => {
 
       <Pane display="flex" flexDirection="column" height="100vh" background={S.props(["colors", "background", "purpleTint"])(primaTheme)}>
 
-        {!hideHeader && <Header user={ user } loading={ loading } />}
+        
 
         {/* Api Errors */}
         {/* {error && <Pane margin={majorScale(2)}>
@@ -65,6 +65,7 @@ const Layout = ({ user, loading = false, children, products, hideHeader }) => {
 
         {children}
 
+        {!hideHeader && <Header user={user} loading={loading} />} 
       </Pane>
 
       

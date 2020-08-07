@@ -51,16 +51,16 @@ function Search({ searchResults, sources, cart }) {
         />
       </Pane>
 
-      {currentlyLoading && <SpinnerBox />}
+      {/* {currentlyLoading && <SpinnerBox />} */}
 
       {!currentlyLoading && !user && <LoginBox />}
 
-      {!currentlyLoading && user && (
+      {user && (
         <>
           
-          <ProductList user={user} loading={loading} products={S.fromMaybe ([])(products)} sources={S.fromMaybe ([]) (mbSourceList) } />
+          <ProductList user={user} loading={currentlyLoading} products={S.fromMaybe ([])(products)} sources={S.fromMaybe ([]) (mbSourceList) } />
 
-          <Totalizer viewingCart={false} total={"R$ 100.099,35"} />
+          <Totalizer loading={currentlyLoading} viewingCart={false} total={"R$ 100.099,35"} />
         </>
       )}
     </Layout>
