@@ -40,8 +40,7 @@ const ProductRow = ({ product, sources, viewingCart, quantity, userId }) => {
     const selected = S.fromMaybe ({}) (mbVariantObject)
 
     const mbSourceId = S.map(S.prop("source"))(mbVariantObject)
-
-    const mbSource = findByIdInList(S.fromMaybe("não encontrado")(mbSourceId))(sources)   // if -1 is Nothing
+    const mbSource = findByIdInList(S.fromMaybe("não encontrado")(mbSourceId))(sources)
 
     const nextCartState = async (delta) => {
         const res = await fetch("http://localhost:3000/api/cart", {

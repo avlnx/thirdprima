@@ -17,7 +17,6 @@ const $ = require("sanctuary-def")
 const stringProp = str => S.get (S.is($.String)) (str) 
 
 const Variant = ({ variant, sources }) => {
-    debugger
     const mbSourceId = stringProp ("source") (variant) 
     const mbSource = findByIdInList (S.fromMaybe ("não encontrado") (mbSourceId)) (sources)
     const jSource = S.maybeToNullable (mbSource)

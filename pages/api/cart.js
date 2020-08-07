@@ -13,6 +13,8 @@ const initialCart = {
   items: {}
 }
 
+const getLatestCart = async carts => await carts.find({}, { sort: { "_id": -1 }, limit: 1 }).toArray()
+
 handler.use(middleware);
 
 handler.get(async (req, res) => {
@@ -24,7 +26,7 @@ handler.get(async (req, res) => {
   // get latest cart or seed a new one, TODO: filter by user
   // TODO: get "simples" flag here and pick appropriate price
   const latestCart = S.fromMaybe ({...initialCart}) (S.head (cart))
-
+  
   // const cartTotal = S.pipe ([
   //   S.map (S.prop (""))
   // ]) ()
@@ -32,73 +34,57 @@ handler.get(async (req, res) => {
   res.status(200).json({ cart: latestCart });
 });
 
-// const get
-const makeInt = str => S.fromMaybe (-1) (S.parseInt (10) (str))
-
 const getNextCart = mutation => lastCart => {
 
   if (S.isNothing(mutation)) return lastCart
 
-  const fMutation = S.maybeToNullable(mutation)
+  const jMutation = S.maybeToNullable(mutation)
 
-  const variantId = makeInt (S.prop("variantId")(fMutation))
-  const delta = S.prop("delta")(fMutation)
-  const productId = makeInt (S.prop("productId")(fMutation))
+  const variantId = S.prop("variantId")(jMutation)
+  const delta = S.prop("delta")(jMutation)
+  const productId = S.prop("productId")(jMutation)
+
+  debugger
 
   const oldQuantity = S.gets (S.is ($.Number)) (["items", productId, variantId])(lastCart)
 
-  console.log(oldQuantity)
-
   const newQuantity = S.fromMaybe(0)(oldQuantity) + delta
-
+  
   const oldItems = S.fromMaybe({})(S.get(_ => true)("items")(lastCart))
 
-  // productId should be a number for now
-  const productsItem = S.fromMaybe({})(S.get(_ => true) (productId) (oldItems))
+  // we "clone" the last cart and change the items. also set _id to undef so
+  // it gets reset
+  const nextCart = (newQuantity > 0)
+    ? { ...lastCart, items: { ...oldItems, [productId]: { [variantId]: newQuantity} }, _id: undefined}
+    : { ...lastCart, items: S.remove(variantId)(oldItems), _id: undefined}
 
-  const nextProductItems = newQuantity > 0
-    ? (S.insert (variantId) (newQuantity) (productsItem))
-    : (S.remove (variantId)) (productsItem)
-  
-  // now insert the new productItem into the items
-  const newItems = (S.gt(0) (S.size(nextProductItems)))
-    ? (S.insert (productId) (productsItem) (oldItems))
-    : (S.remove (productId) (oldItems))
-
-  return {
-    owner: S.prop("owner")(fMutation),
-    created: new Date(),
-    items: newItems,
-  }
+  return nextCart
 }
 
-const getLatestCart = async carts => await carts.find({}, { sort: { "_id": -1 }, limit: 1 }).toArray()
 
 handler.post(async (req, res) => {
   // insert and return new cart state for this user
   const mutation = S.parseJson(S.is($.Object))(S.prop("body")(req))
 
-  // get last cart TODO: send in from post so we don't need to query this
-  // remember, this needs to be FAST, we run it for every "add to cart" click
   const carts = await req.db.collection('carts')
-  const lastCart = await carts.find({}).sort({ "_id": -1 }).limit(1).toArray()
 
+  const lastCart = await getLatestCart (carts)
+
+  // TODO: confirm serverside this owner is correct
   const maybeOwner = S.map(S.prop("owner"))(mutation)
 
   const seedCart = {
     ...initialCart,
-    owner: S.fromMaybe("")(maybeOwner),
+    "_id": undefined, // so it gets reset
+    owner: S.maybeToNullable (maybeOwner),
   }
 
   const previousCart = S.fromMaybe(seedCart)(S.head(lastCart))
 
   const nextCart = getNextCart(mutation)(previousCart)
-    // const nextCart = getNextCart (lastCart) (mutation)
 
   S.isJust(mutation) ? await carts.insertOne(nextCart) : null
-  // const finalCart = S.when (S.isJust (mutation)) (await carts.insert (nextCart))
 
-  // console.log(collection);
   res.status(200).json({ cart: nextCart });
 });
 
