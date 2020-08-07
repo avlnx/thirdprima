@@ -44,8 +44,6 @@ const getNextCart = mutation => lastCart => {
   const delta = S.prop("delta")(jMutation)
   const productId = S.prop("productId")(jMutation)
 
-  debugger
-
   const oldQuantity = S.gets (S.is ($.Number)) (["items", productId, variantId])(lastCart)
 
   const newQuantity = S.fromMaybe(0)(oldQuantity) + delta
