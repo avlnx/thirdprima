@@ -1,4 +1,5 @@
 import {
+    Button,
     Card,
     majorScale,
     Pane,
@@ -7,9 +8,12 @@ import {
     ShoppingCartIcon,
     Spinner,
 } from "evergreen-ui"
-import ProductRow from "./productRow.js"
+import ProductRow from "./productRow"
+import SearchBox from "./searchBox"
 import { primaTheme, brand } from "../theme"
 import { useFetchUser } from '../lib/user'
+import { id } from "../lib/prima"
+import Link from 'next/link'
 
 const S = require ("sanctuary")
 const $ = require ("sanctuary-def")
@@ -17,16 +21,16 @@ const $ = require ("sanctuary-def")
 const ProductList = ({ user, viewingCart, loading, products, sources }) => {
 
     // const { user, loadingUser } = useFetchUser()
+    // debugger
+    const productList = products
     
     return (
         <>
+        <SearchBox />
             <Card elevation={1} margin={majorScale(2)} padding={0} flex="1" overflowY="auto" background="white">
                 <Table>
                     <Table.Head style={viewingCart ? { "background": brand } : undefined} >
-                        {!viewingCart
-                            ? (<Table.SearchHeaderCell placeholder="Busque por nome" onChange={(v) => setQuery(v)} />)
-                            : (<Table.TextHeaderCell >
-                                
+                        {viewingCart && (<Table.TextHeaderCell >
                                 <Text size={300} textTransform="uppercase" color={S.props(["palette", "blue", "lightest"])(primaTheme)}>Seu carrinho</Text>
                                 <ShoppingCartIcon size={16} color="white" marginLeft={ majorScale (1) } />
                             </Table.TextHeaderCell>
@@ -38,7 +42,7 @@ const ProductList = ({ user, viewingCart, loading, products, sources }) => {
                                 <Spinner />
                             </Pane>)
                             : (S.unchecked.map (product => (
-                                <ProductRow userId={ S.prop ("sub") (user) } quantity={2} viewingCart={viewingCart} product={product} key={S.prop("id")(product)} sources={sources} />)) (products))}
+                                <ProductRow userId={ S.prop ("sub") (user) } quantity={2} viewingCart={viewingCart} product={product} key={id (product)} sources={sources} />)) (productList))}
                     </Table.Body>
                 </Table>
             </Card>
