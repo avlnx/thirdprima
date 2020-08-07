@@ -14,9 +14,9 @@ import { useFetchUser } from '../lib/user'
 const S = require ("sanctuary")
 const $ = require ("sanctuary-def")
 
-const ProductList = ({ viewingCart, loading, products, sources }) => {
+const ProductList = ({ user, viewingCart, loading, products, sources }) => {
 
-    const { user, loadingUser } = useFetchUser()
+    // const { user, loadingUser } = useFetchUser()
     
     return (
         <>

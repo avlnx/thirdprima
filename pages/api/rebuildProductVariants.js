@@ -16,34 +16,54 @@ const renameProperty = prop => newProp => obj => {
 }
 
 handler.get(async (req, res) => {
-  const options = {limit: 100}
+  // const options = {limit: 100}
 
   const variantsCollection = await req.db.collection("variants")
   const productsCollection = await req.db.collection("products")
 
   const productsCursor = await productsCollection.find({})
+  let productsCount = await productsCursor.count()
+  let counter = 0
 
-  const product = await productsCursor.next()
-  console.log("product before update", product)
-  const queryByProductId = id => ({ "product": id })
-  const variants = await variantsCollection.find(queryByProductId (product._id)).toArray()
-  console.log("variants", variants)
+  // productsCursor.forEach (product => {
 
-  const updateObj = { updateOne: {
-    "filter": { "_id": product._id },
-    "update": { 
-      $set : { "variants": variants },
-      $currentDate: { lastModified: true }
+  // })
+  // let updateObjs = []
+  while (await productsCursor.hasNext()) {
+    const product = await productsCursor.next()
+
+    const variants = await variantsCollection.find({ "product": product._id }).toArray()
+
+    // console.log("variants", variants)
+
+    const updateObj = {
+      updateOne: {
+        "filter": { "_id": product._id },
+        "update": {
+          $set: { "variants": variants },
+          $currentDate: { lastModified: true }
+        }
+      }
     }
-  }}
+    // updateObjs.push(updateObj)
+    await productsCollection.updateOne(updateObj.updateOne.filter, updateObj.updateOne.update)
+    counter++
+    console.log(`Processed ${product.label} ${counter} of ${productsCount}`)
+  }
 
-  const result = productsCollection.updateOne(updateObj.updateOne.filter, updateObj.updateOne.update)
+  // const result = productsCollection.updateOne(updateObj.updateOne.filter, updateObj.updateOne.update)
 
-  console.log("updateObj", updateObj)
+  // console.log("updateObj", updateObj)
 
-  console.log("result", result)
+  // console.log("result", result)
+  // let results = {}
+  // try {
+  //   results = productsCollection.bulkWrite(updateObjs);
+  // } catch (e) {
+  //   print(e);
+  // }
 
-  res.status(200).json({ product, variants, result });
+  res.status(200).json({"done": "yes"});
 });
 
 export default handler;

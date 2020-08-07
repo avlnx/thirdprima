@@ -18,33 +18,18 @@ handler.use(middleware);
 handler.get(async (req, res) => {
   // TODO: Filter by owner
   const carts = await req.db.collection('carts')
-
+  
   const cart = await getLatestCart (carts)
-
-  // get latest cart
+  
+  // get latest cart or seed a new one, TODO: filter by user
+  // TODO: get "simples" flag here and pick appropriate price
   const latestCart = S.fromMaybe ({...initialCart}) (S.head (cart))
-
-  const intItemIds = S.pipe ([
-    S.get (_ => true) ("items"),
-    S.fromMaybe({}),
-    S.keys,
-    S.map(S.parseInt(10)),
-    S.map (S.fromMaybe (-1))  // ids should parse but you know
-  ]) (latestCart)
-
-  const query = { id: { $in: intItemIds } }
-  const options = {
-    projection: {id: 1, label: 1, variants: 1}
-  }
-
-  const itemsInCart = await req.db.collection('products').find(query, options).toArray(); // TODO: change id to _id after clean
-  console.log("itemsInCart", itemsInCart)
 
   // const cartTotal = S.pipe ([
   //   S.map (S.prop (""))
   // ]) ()
 
-  res.status(200).json({ cart: latestCart, products: itemsInCart });
+  res.status(200).json({ cart: latestCart });
 });
 
 // const get
@@ -87,7 +72,7 @@ const getNextCart = mutation => lastCart => {
   }
 }
 
-const getLatestCart = async carts => carts.find({}).sort({ "_id": -1 }).limit(1).toArray()
+const getLatestCart = async carts => await carts.find({}, { sort: { "_id": -1 }, limit: 1 }).toArray()
 
 handler.post(async (req, res) => {
   // insert and return new cart state for this user

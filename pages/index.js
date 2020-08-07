@@ -14,7 +14,8 @@ const S = require("sanctuary")
 const $ = require ("sanctuary-def")
 
 function Home({ products, sources, cart }) {
-  const { user, loading } = useFetchUser()
+  // const { user, loading } = useFetchUser()
+  const { user, loading } = { user: { sub: "someId" }, loading: false }
   const productList = S.get(_ => true) ("products") (products)
   const sourceList = S.get(_ => true) ("sources") (sources)
 
@@ -31,7 +32,7 @@ function Home({ products, sources, cart }) {
 
       {user && (
         <>
-          <ProductList loading={loading} products={ S.fromMaybe ([]) (productList) } sources={ S.fromMaybe ([]) (sourceList) } />
+          <ProductList user={user} loading={loading} products={ S.fromMaybe ([]) (productList) } sources={ S.fromMaybe ([]) (sourceList) } />
 
           <Totalizer viewingCart={false} total={"R$ 100.099,35"} />
         </>

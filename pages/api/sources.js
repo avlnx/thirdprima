@@ -9,10 +9,7 @@ handler.get(async (req, res) => {
   const collection = await req.db.collection('sources')
 
   const sources = await collection.find({}).toArray()
-
-  // console.log("sources", sources)
-
-  // console.log(collection);
+  
   res.status(200).json({ sources });
 });
 

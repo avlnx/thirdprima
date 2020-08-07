@@ -1,6 +1,6 @@
 import nextConnect from 'next-connect';
 import middleware from '../../middleware/database';
-
+//    "dev": "NODE_OPTIONS='--inspect' next",
 const handler = nextConnect();
 
 handler.use(middleware);
@@ -8,12 +8,8 @@ handler.use(middleware);
 handler.get(async (req, res) => {
   const collection = await req.db.collection('products')
 
-  const products = await collection.find().limit(2).toArray()
-
-  
-  const productsVariants = await req.db.collection('variants').find()
-
-  // console.log("Products", products)
+  const options = { limit: 20 }
+  const products = await collection.find({}, options).toArray()
 
   // console.log(collection);
   res.status(200).json({ products });
