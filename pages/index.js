@@ -21,22 +21,13 @@ function Home({ products, sources, cart }) {
 
   console.log("cart", cart)
 
-  const [query, setQuery] = useState('')
-
   return (
-    <Layout user={user} loading={loading} hideHeader={!loading && !user }>
-
-      {loading && <Spinner />}
-
-      {!loading && !user && <LoginBox />}
-
-      {user && (
-        <>
-          <ProductList user={user} loading={loading} products={ S.fromMaybe ([]) (productList) } sources={ S.fromMaybe ([]) (sourceList) } />
+    <Layout loading={loading}>
+        
+          <ProductList products={ S.fromMaybe ([]) (productList) } sources={ S.fromMaybe ([]) (sourceList) } />
 
           <Totalizer viewingCart={false} total={"R$ 100.099,35"} />
-        </>
-      )}
+        
     </Layout>
   )
 }

@@ -7,9 +7,8 @@ const S = require("sanctuary")
 function Header({ user, loading }) {
   const authenticated = !loading && user
   return (
-    <Pane elevation={1} borderBottom="muted" background={brand} paddingX={majorScale(2)} paddingY={minorScale(1)} display="flex" alignItems="center" justifyContent="space-between">
+    <Pane elevation={0} borderBottom="muted" background={brand} paddingX={majorScale(2)} paddingY={minorScale(1)} display="flex" alignItems="center" justifyContent="space-between">
       <Pane display="flex">
-        <Heading size={100} color={S.prop("lightest")(palette)}>PRIMA</Heading>
         <Badge color="neutral" isSolid marginLeft={majorScale(1)}>beta</Badge>
       </Pane>
 

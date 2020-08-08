@@ -11,7 +11,7 @@ const SearchBox = () => {
   return (
     <Card display="flex" elevation={1} margin={majorScale(2)} padding={majorScale(1)} alignItems="center" justifyContent="flex-start" background={ brand }>
       <Pane marginX={majorScale (2)}>
-        <Heading size="400" color="white">PRIMA</Heading>
+        <Heading size={100} color="white">PRIMA</Heading>
       </Pane>
       <Pane flex="1">
         <SearchInput placeholder="Buscar produto" width="100%" height={40} onChange={e => setQuery (e.target.value) } />

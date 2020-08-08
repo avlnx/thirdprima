@@ -20,7 +20,11 @@ import { findByIdInList, id } from "../lib/prima"
 const S = require("sanctuary")
 const $ = require("sanctuary-def")
 
-const ProductRow = ({ product, sources, viewingCart, quantity, userId }) => {
+const ProductRow = ({ product, sources, viewingCart, userId }) => {
+    // TODO: quantity needs to be in state  so it changes on updates
+    // we get the cart updated from the api call so it should set the state
+    // from there and maybe pass it down the line. or set the cart in context.
+
     // // Array of objects predicate
     const arrayOfObjects = S.is($.Array($.Object))
 
@@ -65,7 +69,7 @@ const ProductRow = ({ product, sources, viewingCart, quantity, userId }) => {
             <Table.Row display="flex" key={id(product)} height="auto" padding={majorScale(1)} flexWrap="wrap" backgroundColor={"white"}>
 
                 {viewingCart && <Table.TextCell flexBasis={60} flexGrow={0} flexShrink={0}>
-                    <Badge color="red">{quantity}</Badge>
+                    <Badge color="red">{ S.fromMaybe (0) (S.get (S.is ($.Number)) ("quantity") (selected)) }</Badge>
                 </Table.TextCell>}
 
                 <Table.TextCell flexBasis={380} paddingY={majorScale(1)}>

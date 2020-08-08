@@ -1,6 +1,7 @@
 import Head from 'next/head'
 import Header from './header'
 import { useState } from "react"
+import { useFetchUser } from '../lib/user'
 import Paginator from "./paginator"
 
 import { palette, brand, primaTheme } from "../theme"
@@ -25,25 +26,25 @@ import {
 } from 'evergreen-ui'
 import ProductList from './productList'
 import Totalizer from './totalizer'
+import LoginBox from "./loginBox"
+
+// import { useAuth0 } from "@auth0/auth0-react";
 
 const S = require('sanctuary')
+const $ = require ("sanctuary-def")
 
-const Layout = ({ user, loading = false, children, products, hideHeader }) => {
-  const [viewingCart, setViewingCart] = useState(false)
+const Layout = ({ products, children, loading: upperLoading }) => {
+  const { user, loading } = useFetchUser();
+
+  const isLoading = loading || upperLoading
+
   const [currentPage, setCurrentPage] = useState(1) // start at page 1
-  const [query, setQuery] = useState('') // start "not searching"
 
-  const apiEndpointGivenCurrentState = `http://localhost:9000/api/products/?page=${currentPage}${query ? "&search=" + query : ''}`
+  const mbUser = S.get (S.is ($.String)) ("sub") (user)
 
-  // const { data, error } = useSWR ([apiEndpointGivenCurrentState, token], tokenFetcher, {"shouldRetryOnError": false})
+  const isAuthenticated = S.maybeToNullable (mbUser) !== null
 
-  const getCount = S.get(_ => true)("count")
-  const dataCount = getCount(products)  // Maybe(1000)
-
-  const getResults = S.get(_ => true)("results")
-  const dataResultsCount = S.maybe(0)(S.size)(getResults(products))  // 0 or 50 for example
-
-  const numPages = Math.ceil(S.maybe(0)(n => S.div(dataResultsCount)(n))(dataCount))
+  const hideHeader = !isAuthenticated
 
   return (
     <>
@@ -52,20 +53,13 @@ const Layout = ({ user, loading = false, children, products, hideHeader }) => {
       </Head>
 
       <Pane display="flex" flexDirection="column" height="100vh" background={S.props(["colors", "background", "purpleTint"])(primaTheme)}>
-
         
-
-        {/* Api Errors */}
-        {/* {error && <Pane margin={majorScale(2)}>
-          <Alert
-            intent="danger"
-            title="Ops. Algo está errado. Nossos engenheiros já foram informados. Tente novamente mais tarde. Obrigado."
-          />
-        </Pane>} */}
-
-        {children}
-
-        {!hideHeader && <Header user={user} loading={loading} />} 
+        {isLoading 
+          ? <Spinner />
+          : !isAuthenticated && <LoginBox /> || isAuthenticated && children
+        }
+        
+        {!hideHeader && <Header user={user} loading={isLoading} />}
       </Pane>
 
       

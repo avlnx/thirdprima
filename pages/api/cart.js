@@ -1,6 +1,7 @@
 import nextConnect from 'next-connect';
 import middleware from '../../middleware/database';
 import next from 'next';
+import { ObjectId } from "mongodb"
 
 const handler = nextConnect();
 
@@ -26,12 +27,30 @@ handler.get(async (req, res) => {
   // get latest cart or seed a new one, TODO: filter by user
   // TODO: get "simples" flag here and pick appropriate price
   const latestCart = S.fromMaybe ({...initialCart}) (S.head (cart))
-  
+
+  const productIds = S.unchecked.keys (S.prop ("items") (latestCart))
+  const productObjectIds = S.map (ObjectId) (productIds)
+
+  const query = { "_id": { $in: productObjectIds } }
+  const products = await req.db.collection('products').find(query).toArray()
+
+  // debugger
+
+  const productsWithQuantities = S.unchecked.map (p => {
+    const newVariants = S.unchecked.map (v => {
+      const pId = S.prop ("_id") (p)
+      const vId = S.prop ("_id") (v)
+      const mbVariantQuantity = S.unchecked.gets (S.is ($.Number)) ([pId, vId]) (S.prop ("items") (latestCart))
+      return { ...v, quantity: S.fromMaybe (0) (mbVariantQuantity) }
+    }) (S.prop ("variants") (p))
+    return {...p, variants: newVariants }
+  }) (products)
+
   // const cartTotal = S.pipe ([
   //   S.map (S.prop (""))
   // ]) ()
 
-  res.status(200).json({ cart: latestCart });
+  res.status(200).json({ cart: latestCart, products: productsWithQuantities });
 });
 
 const getNextCart = mutation => lastCart => {
@@ -56,9 +75,9 @@ const getNextCart = mutation => lastCart => {
     ? { ...lastCart, items: { ...oldItems, [productId]: { [variantId]: newQuantity} }, _id: undefined}
     : { ...lastCart, items: S.remove(variantId)(oldItems), _id: undefined}
 
+    console.log("nextCart server", nextCart)
   return nextCart
 }
-
 
 handler.post(async (req, res) => {
   // insert and return new cart state for this user
@@ -67,7 +86,8 @@ handler.post(async (req, res) => {
   const carts = await req.db.collection('carts')
 
   const lastCart = await getLatestCart (carts)
-
+  // debugger
+  
   // TODO: confirm serverside this owner is correct
   const maybeOwner = S.map(S.prop("owner"))(mutation)
 
