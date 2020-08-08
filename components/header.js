@@ -16,7 +16,7 @@ function Header({ user, loading }) {
         <>
           <Heading size={100} color={S.prop("base")(palette)}>Olá {S.fromMaybe("")(S.get(_ => true)("name")(user))}</Heading>
           <Link href="/api/logout">
-            <Button appearance="minimal"  color="white" height={24}>
+            <Button appearance="minimal" is="a" style={{ color: "white", textDecoration: "underline"}} height={24}>
               Sair</Button>
           </Link>
         </>
