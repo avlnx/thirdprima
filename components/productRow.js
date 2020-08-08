@@ -20,7 +20,7 @@ import { findByIdInList, id } from "../lib/prima"
 const S = require("sanctuary")
 const $ = require("sanctuary-def")
 
-const ProductRow = ({ product, sources, viewingCart, userId }) => {
+const ProductRow = ({ product, viewingCart, userId, sources }) => {
     // TODO: quantity needs to be in state  so it changes on updates
     // we get the cart updated from the api call so it should set the state
     // from there and maybe pass it down the line. or set the cart in context.
@@ -44,8 +44,8 @@ const ProductRow = ({ product, sources, viewingCart, userId }) => {
     const mbVariantObject = findByIdInList(selectedVariant)(flatVariants)
     const selected = S.fromMaybe ({}) (mbVariantObject)
 
-    const mbSourceId = S.map(S.prop("source"))(mbVariantObject)
-    const mbSource = findByIdInList(S.fromMaybe("não encontrado")(mbSourceId))(sources)
+    // const mbSourceId = S.map(S.prop("source"))(mbVariantObject)
+    // const mbSource = findByIdInList(S.fromMaybe("não encontrado")(mbSourceId))(sources)
 
     const q = S.fromMaybe(0)(S.get(S.is($.Number))("quantity")(selected))
     const [ quantity, setQuantity ] = useState (q)
@@ -65,7 +65,7 @@ const ProductRow = ({ product, sources, viewingCart, userId }) => {
     }
 
     // short-circuit if no valid variant is found
-    return (S.or(S.isNothing(mbSource))(S.isNothing(mbVariantObject)))
+    return ((S.isNothing(mbVariantObject)))
         ? (<Alert
             intent="danger"
             title="Aqui jaz um produto malcriado."
