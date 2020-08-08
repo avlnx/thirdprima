@@ -29,7 +29,8 @@ const ProductRow = ({ product, sources, viewingCart, userId }) => {
     const arrayOfObjects = S.is($.Array($.Object))
 
     const variants = S.get(arrayOfObjects)("variants")(product)
-    const flatVariants = S.fromMaybe([])(variants)
+    const [flatVariants, setVariantList] = useState(S.fromMaybe([])(variants))
+    // const flatVariants = S.fromMaybe([])(variants)
 
     const mbFirstVariantsId = S.pipe([
         S.chain(S.head),
@@ -46,7 +47,11 @@ const ProductRow = ({ product, sources, viewingCart, userId }) => {
     const mbSourceId = S.map(S.prop("source"))(mbVariantObject)
     const mbSource = findByIdInList(S.fromMaybe("não encontrado")(mbSourceId))(sources)
 
+    const q = S.fromMaybe(0)(S.get(S.is($.Number))("quantity")(selected))
+    const [ quantity, setQuantity ] = useState (q)
+
     const nextCartState = async (delta) => {
+        setQuantity (S.max (0) (quantity + delta))
         const res = await fetch("http://localhost:3000/api/cart", {
             method: "post",
             body: JSON.stringify({
@@ -69,7 +74,7 @@ const ProductRow = ({ product, sources, viewingCart, userId }) => {
             <Table.Row display="flex" key={id(product)} height="auto" padding={majorScale(1)} flexWrap="wrap" backgroundColor={"white"}>
 
                 {viewingCart && <Table.TextCell flexBasis={60} flexGrow={0} flexShrink={0}>
-                    <Badge color="red">{ S.fromMaybe (0) (S.get (S.is ($.Number)) ("quantity") (selected)) }</Badge>
+                    <Badge color="red">{ quantity }</Badge>
                 </Table.TextCell>}
 
                 <Table.TextCell flexBasis={380} paddingY={majorScale(1)}>
