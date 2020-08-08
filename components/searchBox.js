@@ -1,7 +1,7 @@
 import { Button, Card, Heading, majorScale, Pane, SearchInput, SearchIcon, Text } from "evergreen-ui"
 import Link from "next/link"
 import { useState } from "react"
-import { brand } from "../theme"
+import { brand, palette } from "../theme"
 
 const SearchBox = () => {
   const [ query, setQuery ] = useState ("")
@@ -14,11 +14,11 @@ const SearchBox = () => {
         <Heading size={100} color="white">PRIMA</Heading>
       </Pane>
       <Pane flex="1">
-        <SearchInput placeholder="Buscar produto" width="100%" height={40} onChange={e => setQuery (e.target.value) } />
+        <SearchInput placeholder="Buscar produto" width="100%" onChange={e => setQuery (e.target.value) } />
       </Pane>
       <Pane marginLeft={majorScale(2)}>
         <Link href={`/busca/${pq (query)}`}>
-          <Button height={40} iconAfter={SearchIcon}>Buscar</Button>
+          <Button iconAfter={SearchIcon}>Buscar</Button>
         </Link>
       </Pane>
     </Card>

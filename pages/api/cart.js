@@ -34,14 +34,20 @@ handler.get(async (req, res) => {
   const query = { "_id": { $in: productObjectIds } }
   const products = await req.db.collection('products').find(query).toArray()
 
-  // debugger
-
+  let totalPrice = 0
+  let itemsInCart = 0
   const productsWithQuantities = S.unchecked.map (p => {
     const newVariants = S.unchecked.map (v => {
+      // debugger
       const pId = S.prop ("_id") (p)
       const vId = S.prop ("_id") (v)
-      const mbVariantQuantity = S.unchecked.gets (S.is ($.Number)) ([pId, vId]) (S.prop ("items") (latestCart))
-      return { ...v, quantity: S.fromMaybe (0) (mbVariantQuantity) }
+      const mbVariantQuantity = S.unchecked.gets(S.is($.FiniteNumber)) ([pId, vId]) (S.prop ("items") (latestCart))
+      const jQuantity = S.fromMaybe(0)(mbVariantQuantity)
+      const jPrice = S.fromMaybe(0)(S.get (S.is ($.FiniteNumber)) ("price") (v))
+      const jPackSize = S.fromMaybe(0)(S.get(S.is($.FiniteNumber))("pack_size")(v))
+      totalPrice += (jQuantity * jPrice * jPackSize)
+      itemsInCart += jQuantity
+      return { ...v, quantity: jQuantity }
     }) (S.prop ("variants") (p))
     return {...p, variants: newVariants }
   }) (products)
@@ -49,8 +55,8 @@ handler.get(async (req, res) => {
   // const cartTotal = S.pipe ([
   //   S.map (S.prop (""))
   // ]) ()
-
-  res.status(200).json({ cart: latestCart, products: productsWithQuantities });
+  // debugger
+  res.status(200).json({ cart: latestCart, products: productsWithQuantities, totalPrice, itemsInCart });
 });
 
 const getNextCart = mutation => lastCart => {
