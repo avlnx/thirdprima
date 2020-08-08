@@ -26,7 +26,7 @@ const Totalizer = ({ viewingCart, total, loading }) => {
     {viewingCart
       ?
       <Pane>
-        <Link href="/" style={{marginRight: 100, display: "block"}}>
+        <Link href="/" >
           <Button appearance="minimal" intent="danger">Cancelar</Button>
         </Link>
         <Button height={48} appearance="primary" style={S.prop("primaryButton")(primaTheme)}  onClick={() => alert("promote this bitch")} iconAfter={ArrowRightIcon}>Finalizar pedido</Button>
