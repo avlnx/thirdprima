@@ -9,22 +9,31 @@ import ProductList from "../components/productList"
 import Paginator from "../components/paginator"
 import Totalizer from "../components/totalizer"
 import LoginBox from "../components/loginBox"
+import { currency, getNextCart, makeCartMutation, updateProductQuantityBy, postNextCartState } from "../lib/prima"
 
 const S = require("sanctuary")
 const $ = require ("sanctuary-def")
 
-function Home({ products, sources, cart }) {
+function Home({ products, sources, incomingCart }) {
+  const [ cart, setCart ] = useState (incomingCart)
+
   const productList = S.get(_ => true) ("products") (products)
   const sourceList = S.get(_ => true) ("sources") (sources)
+
+  const { user, loading } = useFetchUser()
+  // const productList = S.get(S.is($.Array($.Object)))("products")(cart)
+  // const sourceList = S.get(S.is($.Array($.Object)))("sources")(sources)
+  const totalPrice = S.get(S.is($.FiniteNumber))("totalPrice")(cart)
+  const itemsInCart = S.get(S.is($.FiniteNumber))("itemsInCart")(cart)
 
   console.log("cart", cart)
 
   return (
     <Layout>
         
-          <ProductList products={ S.fromMaybe ([]) (productList) } sources={ S.fromMaybe ([]) (sourceList) } />
+      <ProductList cart={cart} updateProductQuantityBy={updateProductQuantityBy} products={ S.fromMaybe ([]) (productList) } sources={ S.fromMaybe ([]) (sourceList) } />
 
-          <Totalizer viewingCart={false} total={"R$ 100.099,35"} />
+      <Totalizer viewingCart={false} total={S.fromMaybe("R$ 0")(S.map(currency.format)(totalPrice))} />
         
     </Layout>
   )
@@ -44,7 +53,6 @@ export const getStaticProps = async (context) => {
   // console.log("sources props", sources)
 
   const cartRes = await fetch(`http://localhost:3000/api/cart/`)
-
   const cart = await cartRes.json()
 
   return {

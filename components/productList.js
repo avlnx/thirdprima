@@ -18,7 +18,7 @@ import Link from 'next/link'
 const S = require ("sanctuary")
 const $ = require ("sanctuary-def")
 
-const ProductList = ({ viewingCart, products, sources }) => {
+const ProductList = ({ viewingCart, products, sources, updateProductQuantityBy, cart }) => {
 
     const { user, loading } = useFetchUser()
     // debugger
@@ -42,7 +42,7 @@ const ProductList = ({ viewingCart, products, sources }) => {
                                 <Spinner />
                             </Pane>)
                             : (S.unchecked.map (product => (
-                                <ProductRow userId={ S.prop ("sub") (user) } viewingCart={viewingCart} product={product} key={id (product)} sources={sources} />)) (productList))}
+                                <ProductRow cart={cart} updateProductQuantityBy={updateProductQuantityBy} userId={ S.prop ("sub") (user) } viewingCart={viewingCart} product={product} key={id (product)} sources={sources} />)) (productList))}
                     </Table.Body>
                 </Table>
             </Card>

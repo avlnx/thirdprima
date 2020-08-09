@@ -23,7 +23,7 @@ import { arrayOfObjects, id, indexById, stringProp } from "../lib/prima"
 const S = require("sanctuary")
 const $ = require("sanctuary-def")
 
-const ProductRow = ({ product, viewingCart, userId }) => {
+const ProductRow = ({ product, viewingCart, userId, updateProductQuantityBy, cart }) => {
 
   const [selectedVariantId, setSelectedVariantId] = useState("")
 
@@ -59,21 +59,9 @@ const ProductRow = ({ product, viewingCart, userId }) => {
     setSelectedVariantId(firstVariantsId)
   }, [])
 
-  const selected = S.maybeToNullable (S.get (_ => true) (selectedVariantId) (indexedVariants))
+  const selected = S.maybeToNullable(S.get(_ => true)(selectedVariantId)(indexedVariants))
 
-  const nextCartState = async (delta) => {
-    // setQuantity(S.max(0)(quantity + delta))
-    const res = await fetch("http://localhost:3000/api/cart", {
-      method: "post",
-      body: JSON.stringify({
-        delta: delta,
-        variantId: `${selectedVariantId}`,
-        productId: `${S.maybeToNullable (productId)}`,
-        owner: userId,
-      })
-    })
-    console.log("nextCart", res)
-  }
+  const nextCartState = delta => updateProductQuantityBy (cart) (productId) (selectedVariantId) (delta)
 
   return (
     <Table.Row display="flex" key={productId} height="auto" padding={minorScale(1)} flexWrap="wrap" backgroundColor={"white"}>
@@ -93,7 +81,7 @@ const ProductRow = ({ product, viewingCart, userId }) => {
                 <Table.TextCell>Escolha o melhor</Table.TextCell>
               </Table.Head>
               <Table.Body>
-                {S.map(v => <Table.Row key={id(v)} isSelected={S.equals (S.prop ("_id") (v)) (selectedVariantId)} isSelectable onSelect={() => {
+                {S.map(v => <Table.Row key={id(v)} isSelected={S.equals(S.prop("_id")(v))(selectedVariantId)} isSelectable onSelect={() => {
                   close()
                   setSelectedVariantId(id(v))
                 }}>
@@ -109,7 +97,7 @@ const ProductRow = ({ product, viewingCart, userId }) => {
         }
       </Table.TextCell>
       <Table.TextCell flexBasis={150} paddingY={majorScale(1)}>
-        <ActionButtons action={nextCartState} />
+        <ActionButtons action={(delta) => updateProductQuantityBy(cart)(productId)(selectedVariantId)(delta)} />
         {/* <Pane
                     display="flex"
                     alignItems="center"
