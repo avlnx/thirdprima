@@ -19,6 +19,7 @@ const getLatestCart = async carts => await carts.find({}, { sort: { "_id": -1 },
 handler.use(middleware)
 
 handler.get(async (req, res) => {
+  
   // TODO: Filter by owner
   const carts = await req.db.collection('carts')
   
@@ -40,7 +41,6 @@ handler.get(async (req, res) => {
   let itemsInCart = 0
   const productsWithQuantities = S.unchecked.map (p => {
     const newVariants = S.unchecked.map (v => {
-      // debugger
       const pId = S.prop ("_id") (p)
       const vId = S.prop ("_id") (v)
       const mbVariantQuantity = S.unchecked.gets(S.is($.FiniteNumber)) ([pId, vId]) (S.prop ("items") (latestCart))
@@ -54,7 +54,7 @@ handler.get(async (req, res) => {
     return {...p, variants: newVariants }
   }) (products)
 
-  res.status(200).json({ cart: latestCart, products: productsWithQuantities, totalPrice, itemsInCart });
+  res.status(200).json({ cart: latestCart, products: productsWithQuantities, totalPrice, itemsInCart })
 });
 
 
@@ -62,8 +62,8 @@ handler.get(async (req, res) => {
 handler.post(async (req, res) => {
   // insert and return new cart state for this user
   // const mbMutation = S.parseJson(S.is($.Object))(S.prop("body")(req))
-
-  // const carts = await req.db.collection('carts')
+debugger
+  const carts = await req.db.collection('carts')
 
   // const lastCart = await getLatestCart (carts)
   // // debugger
@@ -85,9 +85,11 @@ handler.post(async (req, res) => {
 
   const nextCart = S.parseJson(S.is($.Object))(S.prop("body")(req))
 
-  S.isJust(nextCart) ? await carts.insertOne(nextCart) : null
+  // TODO: validation
 
-  res.status(200).json({ cart: S.fromMaybe("Carrinho inválido. Descartado e logado.")(nextCart) });
+  S.isJust(nextCart) ? await carts.insertOne(S.maybeToNullable(nextCart)) : null
+
+  res.status(200).json({ cart: S.maybeToNullable(nextCart) });
 });
 
 export default handler;

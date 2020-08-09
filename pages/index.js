@@ -14,19 +14,41 @@ import { currency, getNextCart, makeCartMutation, updateProductQuantityBy, postN
 const S = require("sanctuary")
 const $ = require ("sanctuary-def")
 
-function Home({ products, sources, incomingCart }) {
-  const [ cart, setCart ] = useState (incomingCart)
+function Home({ products, sources, cart: apiCart }) {
+  const [ cart, setCart ] = useState (apiCart.cart)
 
-  const productList = S.get(_ => true) ("products") (products)
-  const sourceList = S.get(_ => true) ("sources") (sources)
+  const productList = S.get(S.is($.Array($.Object))) ("products") (products)
+  const sourceList = S.get (S.is ($.Array ($.Object))) ("sources") (sources)
 
   const { user, loading } = useFetchUser()
   // const productList = S.get(S.is($.Array($.Object)))("products")(cart)
   // const sourceList = S.get(S.is($.Array($.Object)))("sources")(sources)
-  const totalPrice = S.get(S.is($.FiniteNumber))("totalPrice")(cart)
-  const itemsInCart = S.get(S.is($.FiniteNumber))("itemsInCart")(cart)
+  const totalPrice = S.get(S.is($.FiniteNumber))("totalPrice")(apiCart)
+  const itemsInCart = S.get(S.is($.FiniteNumber))("itemsInCart")(apiCart)
 
   console.log("cart", cart)
+
+  // export const updateProductQuantityBy = previousCart => productId => variantId => delta => {
+  //   const nextCart = getNextCart(previousCart)(makeCartMutation(productId, variantId, delta))
+
+  //   // set off post
+  //   postNextCartState(nextCart)
+
+  //   // returns nextCart so we can change local state immediately 
+  //   return nextCart
+  // }
+
+  const updateProductQuantityBy = productId => variantId => delta => {
+    const nextCart = getNextCart(cart)(makeCartMutation(productId)(variantId)( delta)(S.maybeToNullable(S.get(S.is ($.String)) ("sub") (user))))
+
+    // set off post
+    postNextCartState(nextCart)
+
+    // returns nextCart so we can change local state immediately 
+    setCart(nextCart)
+  }
+
+  // export const updateProductQuantityBy = previousCart => productId => variantId => delta => {
 
   return (
     <Layout>

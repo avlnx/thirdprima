@@ -40,6 +40,8 @@ const ProductRow = ({ product, viewingCart, userId, updateProductQuantityBy, car
   // bail if no variants
   if (S.unchecked.any(S.isNothing)(data)) return invalidRender
 
+  const productIdValue = S.maybeToNullable (productId)
+
   const indexedVariants = indexById(S.maybeToNullable(variants))
 
   const mbFirstVariantsId = S.pipe([
@@ -60,8 +62,6 @@ const ProductRow = ({ product, viewingCart, userId, updateProductQuantityBy, car
   }, [])
 
   const selected = S.maybeToNullable(S.get(_ => true)(selectedVariantId)(indexedVariants))
-
-  const nextCartState = delta => updateProductQuantityBy (cart) (productId) (selectedVariantId) (delta)
 
   return (
     <Table.Row display="flex" key={productId} height="auto" padding={minorScale(1)} flexWrap="wrap" backgroundColor={"white"}>
@@ -97,16 +97,16 @@ const ProductRow = ({ product, viewingCart, userId, updateProductQuantityBy, car
         }
       </Table.TextCell>
       <Table.TextCell flexBasis={150} paddingY={majorScale(1)}>
-        <ActionButtons action={(delta) => updateProductQuantityBy(cart)(productId)(selectedVariantId)(delta)} />
-        {/* <Pane
+        {/* <ActionButtons action={(delta) => updateProductQuantityBy(cart)(productId)(selectedVariantId)(delta)} /> */}
+        <Pane
                     display="flex"
                     alignItems="center"
                     justifyContent="space-between">
-                    <Button flex={"1"} appearance="minimal" onClick={() => nextCartState(-Infinity)}
+          <Button flex={"1"} appearance="minimal" onClick={() => updateProductQuantityBy(productIdValue)(selectedVariantId)(-Infinity)}
                         intent="danger">remover</Button>
-                    <IconButton flex={"1"} onClick={() => nextCartState(-1)} icon={MinusIcon} />
-                    <IconButton flex={"1"} onClick={() => nextCartState(1)} icon={PlusIcon} />
-                </Pane> */}
+          <IconButton flex={"1"} onClick={() => updateProductQuantityBy(productIdValue)(selectedVariantId)(-1)} icon={MinusIcon} />
+          <IconButton flex={"1"} onClick={() => updateProductQuantityBy(productIdValue)(selectedVariantId)(1)} icon={PlusIcon} />
+                </Pane>
       </Table.TextCell>
     </Table.Row>
   )

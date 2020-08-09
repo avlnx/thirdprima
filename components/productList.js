@@ -42,7 +42,7 @@ const ProductList = ({ viewingCart, products, sources, updateProductQuantityBy, 
                                 <Spinner />
                             </Pane>)
                             : (S.unchecked.map (product => (
-                                <ProductRow cart={cart} updateProductQuantityBy={updateProductQuantityBy} userId={ S.prop ("sub") (user) } viewingCart={viewingCart} product={product} key={id (product)} sources={sources} />)) (productList))}
+                                <ProductRow updateProductQuantityBy={updateProductQuantityBy} userId={ S.prop ("sub") (user) } viewingCart={viewingCart} product={product} key={id (product)} sources={sources} />)) (productList))}
                     </Table.Body>
                 </Table>
             </Card>
