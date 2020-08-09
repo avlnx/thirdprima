@@ -20,7 +20,7 @@ import { findByIdInList, id } from "../lib/prima"
 const S = require("sanctuary")
 const $ = require("sanctuary-def")
 
-const ProductRow = ({ product, viewingCart, userId, sources }) => {
+const ProductRow = ({ product, viewingCart, userId }) => {
     // TODO: quantity needs to be in state  so it changes on updates
     // we get the cart updated from the api call so it should set the state
     // from there and maybe pass it down the line. or set the cart in context.
@@ -96,17 +96,17 @@ const ProductRow = ({ product, viewingCart, userId, sources }) => {
                                                 close()
                                                 setSelectedVariant(id(v))
                                             }}>
-                                                <Variant variant={v} sources={sources} />
+                                                <Variant variant={v} />
                                             </Table.Row>
                                         )(flatVariants)}
                                     </Table.Body>
                                 </Table>
                             )}>
                             <Button iconAfter={CaretDownIcon}>
-                                <Variant variant={selected} sources={sources} />
+                                <Variant variant={selected} />
                             </Button>
                         </Popover>)
-                        : (<Variant variant={selected} sources={sources} />)
+                        : (<Variant variant={selected} />)
                     }
                 </Table.TextCell>
                 <Table.TextCell flexBasis={150} paddingY={majorScale(1)}>
