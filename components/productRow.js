@@ -25,7 +25,7 @@ const $ = require("sanctuary-def")
 
 const ProductRow = ({ product, viewingCart, userId }) => {
 
-  const [selectedVariantId, setSelectedVariantId] = useState("temp")
+  const [selectedVariantId, setSelectedVariantId] = useState("")
 
   const productId = stringProp("_id")(product)
 
@@ -41,13 +41,6 @@ const ProductRow = ({ product, viewingCart, userId }) => {
   if (S.unchecked.any(S.isNothing)(data)) return invalidRender
 
   const indexedVariants = indexById(S.maybeToNullable(variants))
-
-  const variantListRender = v => <Table.Row key={id(v)} isSelectable onSelect={() => {
-    close()
-    setSelectedVariantId(id(v))
-  }}>
-    <Variant variant={v} />
-  </Table.Row>
 
   const mbFirstVariantsId = S.pipe([
     S.chain(S.head),
@@ -68,19 +61,6 @@ const ProductRow = ({ product, viewingCart, userId }) => {
 
   const selected = S.maybeToNullable (S.get (_ => true) (selectedVariantId) (indexedVariants))
 
-
-  // const mbSelectedVariantId = S.maybeToNullable(mbFirstVariantsId)
-
-
-  // const mbVariantObject = findByIdInList(selectedVariant)(flatVariants)
-
-  // if (S.isNothing(mbVariantObject)) return <Alert intent="danger" title="Aqui jaz um produto malcriado." />
-
-  // const selected = S.fromMaybe({})(mbVariantObject)
-
-  // const q = S.fromMaybe(0)(S.get(S.is($.Number))("quantity")(selected))
-  // const [quantity, setQuantity] = useState(q)
-
   const nextCartState = async (delta) => {
     // setQuantity(S.max(0)(quantity + delta))
     const res = await fetch("http://localhost:3000/api/cart", {
@@ -88,7 +68,7 @@ const ProductRow = ({ product, viewingCart, userId }) => {
       body: JSON.stringify({
         delta: delta,
         variantId: `${selectedVariantId}`,
-        productId,
+        productId: `${S.maybeToNullable (productId)}`,
         owner: userId,
       })
     })
