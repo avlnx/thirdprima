@@ -17,8 +17,8 @@ function Home({ products, sources, cart: apiCart }) {
   const sourceList = S.get (S.is ($.Array ($.Object))) ("sources") (sources)
 
   const { user, loading } = useFetchUser()
-  const totalPrice = S.get(S.is($.FiniteNumber))("totalPrice")(apiCart)
-  const itemsInCart = S.get(S.is($.FiniteNumber))("itemsInCart")(apiCart)
+  const totalPrice = S.get(S.is($.FiniteNumber))("totalPrice")(cart)
+  const itemsInCart = S.get(S.is($.FiniteNumber))("itemsInCart")(cart)
 
   console.log("cart", cart)
 
@@ -32,6 +32,9 @@ function Home({ products, sources, cart: apiCart }) {
   const updateQuantityAndSetState = productId => variantId => delta => { 
     const ammendedCart = appendTotalsToCart (cart)
     const nextCart = updateProductQuantityBy (userId) (ammendedCart) (productId) (variantId) (delta)
+
+    
+
     setCart(nextCart)
   }
 
