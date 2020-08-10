@@ -1,15 +1,11 @@
 import { useState } from "react"
 import Layout from '../components/layout'
 import { useFetchUser } from '../lib/user'
-import {
-  Spinner,
-} from "evergreen-ui"
-import BlockSwitch from "../components/switch"
 import ProductList from "../components/productList"
 import Paginator from "../components/paginator"
 import Totalizer from "../components/totalizer"
 import LoginBox from "../components/loginBox"
-import { currency, getNextCart, makeCartMutation, updateProductQuantityBy, postNextCartState } from "../lib/prima"
+import { currency, getNextCart, makeCartMutation, updateProductQuantityBy, postNextCartState, numberPropOrZero } from "../lib/prima"
 
 const S = require("sanctuary")
 const $ = require ("sanctuary-def")
@@ -28,8 +24,14 @@ function Home({ products, sources, cart: apiCart }) {
 
   const userId = S.maybeToNullable(S.get(S.is($.String))("sub")(user))
 
+  // appendTotalsToCart :: Object -> Object
+  const appendTotalsToCart = cart => {
+    return { ...cart, totalPrice: numberPropOrZero(apiCart)("totalPrice"), itemCount: numberPropOrZero (apiCart) ("itemCount") }
+  }
+
   const updateQuantityAndSetState = productId => variantId => delta => { 
-    const nextCart = updateProductQuantityBy (userId) (cart) (productId) (variantId) (delta)
+    const ammendedCart = appendTotalsToCart (cart)
+    const nextCart = updateProductQuantityBy (userId) (ammendedCart) (productId) (variantId) (delta)
     setCart(nextCart)
   }
 
@@ -55,7 +57,7 @@ export const getStaticProps = async (context) => {
   const sources = await resSources.json()
   // console.log("sources props", sources)
 
-  const cartRes = await fetch(`http://localhost:3000/api/cart/`)
+  const cartRes = await fetch(`http://localhost:3000/api/cart/?full=true`)
   const cart = await cartRes.json()
 
   return {
