@@ -102,10 +102,10 @@ const ProductRow = ({ product, viewingCart, updateProductQuantityBy }) => {
                     display="flex"
                     alignItems="center"
                     justifyContent="space-between">
-          <Button flex={"1"} appearance="minimal" onClick={() => updateProductQuantityBy(productIdValue)(selectedVariantId)(-Infinity)}
+          <Button flex={"1"} appearance="minimal" onClick={() =>  updateProductQuantityBy(productIdValue, selectedVariantId, -Infinity)}
                         intent="danger">remover</Button>
-          <IconButton flex={"1"} onClick={() => updateProductQuantityBy(productIdValue)(selectedVariantId)(-1)} icon={MinusIcon} />
-          <IconButton flex={"1"} onClick={() => updateProductQuantityBy(productIdValue)(selectedVariantId)(1)} icon={PlusIcon} />
+          <IconButton flex={"1"} onClick={() =>  updateProductQuantityBy(productIdValue, selectedVariantId, -1)} icon={MinusIcon} />
+          <IconButton flex={"1"} onClick={() =>  updateProductQuantityBy(productIdValue, selectedVariantId, 1)} icon={PlusIcon} />
                 </Pane>
       </Table.TextCell>
     </Table.Row>

@@ -18,7 +18,7 @@ function Home({ products, sources, cart: apiCart }) {
 
   const { user, loading } = useFetchUser()
   const totalPrice = S.get(S.is($.FiniteNumber))("totalPrice")(cart)
-  const itemsInCart = S.get(S.is($.FiniteNumber))("itemsInCart")(cart)
+  const itemCount = S.get(S.is($.FiniteNumber))("itemCount")(cart)
 
   console.log("cart", cart)
 
@@ -29,13 +29,10 @@ function Home({ products, sources, cart: apiCart }) {
     return { ...cart, totalPrice: numberPropOrZero(apiCart)("totalPrice"), itemCount: numberPropOrZero (apiCart) ("itemCount") }
   }
 
-  const updateQuantityAndSetState = productId => variantId => delta => { 
+  const updateQuantityAndSetState = async ( productId, variantId, delta) => { 
     const ammendedCart = appendTotalsToCart (cart)
-    const nextCart = updateProductQuantityBy (userId) (ammendedCart) (productId) (variantId) (delta)
-
-    
-
-    setCart(nextCart)
+    const nextCart = await updateProductQuantityBy (userId, ammendedCart, productId, variantId, delta)
+    setCart(nextCart.cart)
   }
 
   const boundUpdateQuantity = updateQuantityAndSetState.bind()
@@ -60,7 +57,7 @@ export const getStaticProps = async (context) => {
   const sources = await resSources.json()
   // console.log("sources props", sources)
 
-  const cartRes = await fetch(`http://localhost:3000/api/cart/?full=true`)
+  const cartRes = await fetch(`http://localhost:3000/api/cart/`)
   const cart = await cartRes.json()
 
   return {
