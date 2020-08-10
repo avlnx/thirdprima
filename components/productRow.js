@@ -23,7 +23,7 @@ import { arrayOfObjects, id, indexById, stringProp } from "../lib/prima"
 const S = require("sanctuary")
 const $ = require("sanctuary-def")
 
-const ProductRow = ({ product, viewingCart, userId, updateProductQuantityBy, cart }) => {
+const ProductRow = ({ product, viewingCart, updateProductQuantityBy }) => {
 
   const [selectedVariantId, setSelectedVariantId] = useState("")
 

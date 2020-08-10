@@ -21,42 +21,24 @@ function Home({ products, sources, cart: apiCart }) {
   const sourceList = S.get (S.is ($.Array ($.Object))) ("sources") (sources)
 
   const { user, loading } = useFetchUser()
-  // const productList = S.get(S.is($.Array($.Object)))("products")(cart)
-  // const sourceList = S.get(S.is($.Array($.Object)))("sources")(sources)
   const totalPrice = S.get(S.is($.FiniteNumber))("totalPrice")(apiCart)
   const itemsInCart = S.get(S.is($.FiniteNumber))("itemsInCart")(apiCart)
 
   console.log("cart", cart)
 
-  // export const updateProductQuantityBy = previousCart => productId => variantId => delta => {
-  //   const nextCart = getNextCart(previousCart)(makeCartMutation(productId, variantId, delta))
+  const userId = S.maybeToNullable(S.get(S.is($.String))("sub")(user))
 
-  //   // set off post
-  //   postNextCartState(nextCart)
-
-  //   // returns nextCart so we can change local state immediately 
-  //   return nextCart
-  // }
-
-  const updateProductQuantityBy = productId => variantId => delta => {
-    const nextCart = getNextCart(cart)(makeCartMutation(productId)(variantId)( delta)(S.maybeToNullable(S.get(S.is ($.String)) ("sub") (user))))
-
-    // set off post
-    postNextCartState(nextCart)
-
-    // returns nextCart so we can change local state immediately 
+  const updateQuantityAndSetState = productId => variantId => delta => { 
+    const nextCart = updateProductQuantityBy (userId) (cart) (productId) (variantId) (delta)
     setCart(nextCart)
   }
 
-  // export const updateProductQuantityBy = previousCart => productId => variantId => delta => {
+  const boundUpdateQuantity = updateQuantityAndSetState.bind()
 
   return (
     <Layout>
-        
-      <ProductList cart={cart} updateProductQuantityBy={updateProductQuantityBy} products={ S.fromMaybe ([]) (productList) } sources={ S.fromMaybe ([]) (sourceList) } />
-
+      <ProductList cart={cart} updateProductQuantityBy={boundUpdateQuantity} products={ S.fromMaybe ([]) (productList) } sources={ S.fromMaybe ([]) (sourceList) } />
       <Totalizer viewingCart={false} total={S.fromMaybe("R$ 0")(S.map(currency.format)(totalPrice))} />
-        
     </Layout>
   )
 }
@@ -64,7 +46,6 @@ function Home({ products, sources, cart: apiCart }) {
 export default Home
 
 export const getStaticProps = async (context) => {
-  // console.log("context", context.query)
   
   const res = await fetch(`http://localhost:3000/api/products/`)
   const products = await res.json()

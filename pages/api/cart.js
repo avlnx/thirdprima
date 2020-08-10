@@ -24,6 +24,7 @@ handler.get(async (req, res) => {
   const carts = await req.db.collection('carts')
   
   const cart = await getLatestCart (carts)
+
   
   // get latest cart or seed a new one, TODO: filter by user
   // TODO: get "simples" flag here and pick appropriate price
@@ -35,8 +36,10 @@ handler.get(async (req, res) => {
   const query = { "_id": { $in: productObjectIds } }
   const products = await req.db.collection('products').find(query).toArray()
 
+  // TODO: only actually add the products if we were asked with a 
+  // ?with-products
   // code below adds variant's quantities to the cart items and also
-  // calculates cart totals and item count
+  // calculates cart totals and item count. two variables below are impurely altered, refactor when we have time, it's disgusting
   let totalPrice = 0
   let itemsInCart = 0
   const productsWithQuantities = S.unchecked.map (p => {
@@ -60,32 +63,14 @@ handler.get(async (req, res) => {
 
 
 handler.post(async (req, res) => {
-  // insert and return new cart state for this user
-  // const mbMutation = S.parseJson(S.is($.Object))(S.prop("body")(req))
-debugger
-  const carts = await req.db.collection('carts')
-
-  // const lastCart = await getLatestCart (carts)
-  // // debugger
   
-  // // TODO: confirm serverside this owner is correct
-  // const mbOwner = S.map(S.prop("owner"))(mbMutation)
-
-  // const seedCart = {
-  //   ...initialCart,
-  //   "_id": undefined, // so it gets reset
-  //   owner: S.maybeToNullable (mbOwner),
-  // }
-
-  // const previousCart = S.fromMaybe(seedCart)(S.head(lastCart))
-
-  // const nextCart = S.maybe (previousCart) (getNextCart (previousCart)) (mbMutation)
-
-  // const nextCart = getNextCart(mbMutation)(previousCart)
+  const carts = await req.db.collection('carts')
 
   const nextCart = S.parseJson(S.is($.Object))(S.prop("body")(req))
 
-  // TODO: validation
+  // TODO: validate this cart above or at least do something meaningful 
+  // like returning an error and parsing the error on the client 
+
 
   S.isJust(nextCart) ? await carts.insertOne(S.maybeToNullable(nextCart)) : null
 
