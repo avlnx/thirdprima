@@ -8,6 +8,8 @@ const dbname = "seedr"
 const client = new MongoClient(process.env.MONGODB_URI, {
   validateOptions: true,
   connectTimeoutMS: 5000,
+  useUnifiedTopology: true,
+  useNewUrlParser: true,
 });
 
 async function database(req, res, next) {
