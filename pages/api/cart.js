@@ -26,13 +26,10 @@ const grabCartsProducts = async (latestCart, productsCollection) => {
 }
 
 const addMetadataToProductList = products => latestCart => {
-  debugger
   let totalPrice = 0
   let itemCount = 0
   const amendedProductList = S.unchecked.map(p => {
-    debugger
     const newVariants = S.unchecked.map(v => {
-      debugger
       const pId = S.prop("_id")(p)
       const vId = S.prop("_id")(v)
       const mbVariantQuantity = S.unchecked.gets(S.is($.FiniteNumber))([pId, vId])(S.prop("items")(latestCart))
@@ -58,9 +55,6 @@ handler.get(async (req, res) => {
   // get latest cart or seed a new one, TODO: filter by user
   const latestCart = S.fromMaybe ({...initialCart}) (S.head (cart))
   
-  // const productIds = S.unchecked.keys (S.prop ("items") (latestCart))
-  // const productObjectIds = S.map (ObjectId) (productIds)
-  
   const responseObject = { cart: latestCart }
   
   const { full } = req.query
@@ -83,7 +77,6 @@ handler.post(async (req, res) => {
 
   // TODO: validate this cart above or at least do something meaningful 
   // like returning an error and parsing the error on the client 
-
 
   S.isJust(nextCart) ? await carts.insertOne(S.maybeToNullable(nextCart)) : null
 
