@@ -9,7 +9,7 @@ import {
   Strong,
   Text,
 } from "evergreen-ui"
-import { currency, numberPropOrZero, CartContext } from "../lib/prima"
+import { currency, numberPropOrZero, CartContext, indexById } from "../lib/prima"
 
 const S = require("sanctuary")
 const $ = require("sanctuary-def")
@@ -22,7 +22,6 @@ const Variant = ({ variant }) => {
   const packUnit = S.get(S.is($.String))("pack_unit")(variant)
   // TODO: pick price based on user preference (simples, deferred)
   const price = S.get(S.is($.NonZeroValidNumber))("price")(variant)
-  // const quantity = S.get(S.is($.ValidNumber))("quantity")(variant)
 
   const data = [sourceId, productId, variantId, packLabel, packUnit, price]
 
@@ -36,15 +35,16 @@ const Variant = ({ variant }) => {
 
   // const q = S.fromMaybe(0)(quantity)
 
-
+  const getCartQuantity = cart => productIdValue => variantIdValue => S.fromMaybe(0)(S.gets(S.is($.NonZeroValidNumber))([productIdValue, variantIdValue])(S.prop ("items") (cart)))
 
   return (
     <CartContext.Consumer>
       {cart => (
         <Pane padding={majorScale(1)} display="flex" alignItems="center" >
-          {<Pill display="inline-flex" color="red" isSolid margin={8}>{
-            S.fromMaybe(0)(S.gets(S.is($.NonZeroValidNumber))([productIdValue, variantIdValue])(cart.items))
-          }</Pill>}
+          {(getCartQuantity(cart)(productIdValue)(variantIdValue) > 0) ? 
+          <Pill display="inline-flex" color="red" isSolid margin={8}>{
+            getCartQuantity (cart) (productIdValue) (variantIdValue)
+          }</Pill> : null}
         <Badge color="purple">{sourceIdValue}</Badge>
         <Text marginLeft={majorScale(2)}>{packLabelValue}</Text>
         <Pane display="flex" alignItems="center" justifyContent="end">
