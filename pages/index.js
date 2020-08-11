@@ -6,6 +6,8 @@ import Paginator from "../components/paginator"
 import Totalizer from "../components/totalizer"
 import LoginBox from "../components/loginBox"
 import { currency, updateProductQuantityBy, numberPropOrZero, getProducts, getSources, getCart } from "../lib/prima"
+import nc from "next-connect"
+import middleware from "../middleware/database"
 
 const S = require("sanctuary")
 const $ = require ("sanctuary-def")
@@ -47,14 +49,23 @@ function Home({ products, sources, cart: apiCart }) {
 
 export default Home
 
-export async function getServerSideProps(context) {
-  const { MongoClient } = require("mongodb")
+export async function getServerSideProps({ req, res }) {
+  // const { MongoClient } = require("mongodb")
 
-  const products = JSON.parse(await getProducts(MongoClient))
+  const handler = nc()
+    .use(middleware)
+  try {
+    await handler.apply(req, res);
+  } catch (e) {
+    // handle the error
+    console.log("erro middleware handler", e)
+  }
 
-  const sources = JSON.parse(await getSources(MongoClient))
+  const products = JSON.parse(await getProducts(req.db))
 
-  const cart = JSON.parse(await getCart(MongoClient))
+  const sources = JSON.parse(await getSources(req.db))
+
+  const cart = JSON.parse(await getCart(req.db))
 
   // debugger
 
