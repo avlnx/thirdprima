@@ -5,10 +5,9 @@ import ProductList from "../components/productList"
 import Paginator from "../components/paginator"
 import Totalizer from "../components/totalizer"
 import LoginBox from "../components/loginBox"
-import { currency, updateProductQuantityBy, numberPropOrZero, getProducts, getSources, getCart } from "../lib/prima"
+import { currency, updateProductQuantityBy, numberPropOrZero, getProducts, getSources, getCart, CartContext } from "../lib/prima"
 import nc from "next-connect"
 import middleware from "../middleware/database"
-
 const S = require("sanctuary")
 const $ = require ("sanctuary-def")
 
@@ -38,8 +37,10 @@ function Home({ products, sources, cart: apiCart }) {
 
   return (
     <Layout>
-      <ProductList cart={cart} updateProductQuantityBy={boundUpdateQuantity} products={ products } sources={ sources } />
-      <Totalizer viewingCart={false} total={S.fromMaybe("R$ 0")(S.map(currency.format)(totalPrice))} count={numberPropOrZero (cart) ("itemCount")} />
+      <CartContext.Provider value={cart}>
+        <ProductList cart={cart} updateProductQuantityBy={boundUpdateQuantity} products={products} sources={sources} />
+        <Totalizer viewingCart={false} total={S.fromMaybe("R$ 0")(S.map(currency.format)(totalPrice))} count={numberPropOrZero (cart) ("itemCount")} />
+      </CartContext.Provider>
     </Layout>
   )
 }
