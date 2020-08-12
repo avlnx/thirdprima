@@ -102,8 +102,8 @@ const ProductRow = ({ product, viewingCart, updateProductQuantityBy }) => {
           display="flex"
           alignItems="center"
           justifyContent="space-between">
-          <Button flex={"1"} appearance="minimal" onClick={() => updateProductQuantityBy(productIdValue, selectedVariantId, -Infinity)}
-            intent="danger">remover</Button> 
+          {/* <Button flex={"1"} appearance="minimal" onClick={() => updateProductQuantityBy(productIdValue, selectedVariantId, -Infinity)}
+            intent="danger">remover</Button>  */}
           <IconButton flex={"1"} onClick={() => updateProductQuantityBy(productIdValue, selectedVariantId, -1, selected.price * selected.pack_size * -1)} icon={MinusIcon} />
           <IconButton flex={"1"} onClick={() => updateProductQuantityBy(productIdValue, selectedVariantId, 1, selected.price * selected.pack_size * 1)} icon={PlusIcon} />
         </Pane>
