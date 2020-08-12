@@ -18,7 +18,7 @@ import Link from 'next/link'
 const S = require ("sanctuary")
 const $ = require ("sanctuary-def")
 
-const ProductList = ({ viewingCart, products, sources, updateProductQuantityBy, cart }) => {
+const ProductList = ({ viewingCart, products, sources, updateProductQuantityBy }) => {
 
     const { user, loading } = useFetchUser()
     // debugger

@@ -23,7 +23,7 @@ import { arrayOfObjects, id, indexById, stringProp } from "../lib/prima"
 const S = require("sanctuary")
 const $ = require("sanctuary-def")
 
-const ProductRow = ({ product, viewingCart, updateProductQuantityBy }) => {
+const ProductRow = ({ product, viewingCart, updateProductQuantityBy, sources }) => {
 
   const [selectedVariantId, setSelectedVariantId] = useState("")
 
@@ -85,15 +85,15 @@ const ProductRow = ({ product, viewingCart, updateProductQuantityBy }) => {
                   close()
                   setSelectedVariantId(id(v))
                 }}>
-                  <Variant variant={v} />
+                  <Variant variant={v} sources={sources} />
                 </Table.Row>)(flatVariants)}
               </Table.Body>
             </Table>)}>
             <Button iconAfter={CaretDownIcon}>
-              <Variant variant={selected} />
+              <Variant variant={selected} sources={sources} />
             </Button>
           </Popover>
-          : <Variant variant={selected} />
+          : <Variant variant={selected} sources={sources} />
         }
       </Table.TextCell>
       <Table.TextCell flexBasis={150} paddingY={majorScale(1)}>
