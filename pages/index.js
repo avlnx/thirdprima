@@ -5,7 +5,7 @@ import ProductList from "../components/productList"
 import Paginator from "../components/paginator"
 import Totalizer from "../components/totalizer"
 import LoginBox from "../components/loginBox"
-import { currency, updateProductQuantityBy, numberPropOrZero, getProducts, getSources, getCart, CartContext } from "../lib/prima"
+import { currency, updateProductQuantityBy, numberPropOrZero, makeCartMutation, postNextCartState, getNextCart, getProducts, getSources, getCart, CartContext } from "../lib/prima"
 import connect from "../lib/db"
 const S = require("sanctuary")
 const $ = require ("sanctuary-def")
@@ -28,8 +28,15 @@ function Home({ products, sources, cart: apiCart }) {
 
   const userId = S.maybeToNullable(S.get(S.is($.String))("sub")(user))
 
-  const updateQuantityAndSetState = async ( productId, variantId, delta, subtotal) => { 
-    const nextCart = await updateProductQuantityBy (userId, cart, productId, variantId, delta, subtotal)
+  const updateQuantityAndSetState = ( productId, variantId, delta, subtotal) => { 
+    // calculate locally too
+    const mutation = makeCartMutation(productId)(variantId)(delta)(userId)(subtotal)
+
+    const nextCart = getNextCart (cart)(mutation)
+
+    // set off post but don't wait for the response. The state will be updated automatically but for a more snappy experience we return this nextCart and update it on the client too. The server will revalidate when the response comes. TODO: error handling
+    // postNextCartState(nextCart)
+
     setCart(nextCart)
   }
 
