@@ -5,7 +5,7 @@ import ProductList from "../components/productList"
 import Paginator from "../components/paginator"
 import Totalizer from "../components/totalizer"
 import LoginBox from "../components/loginBox"
-import { currency, updateProductQuantityBy, numberPropOrZero, makeCartMutation, postNextCartState, getNextCart, getProducts, getSources, getCart, CartContext, indexById } from "../lib/prima"
+import { currency, updateProductQuantityBy, numberPropOrZero, makeCartMutation, postNextCartState, getNextCart, getProducts, getSources, getCart, CartContext, indexById, CARTSTATUS } from "../lib/prima"
 import connect from "../lib/db"
 const S = require("sanctuary")
 const $ = require ("sanctuary-def")
@@ -16,7 +16,7 @@ function Home({ products, sources, cart: apiCart }) {
   const { user, loading } = useFetchUser()
 
   const indexedSources = indexById (sources)
-  
+
   const total = S.get(S.is($.FiniteNumber))("total")(cart)
   
   const cartItemsCount = S.pipe ([
@@ -30,7 +30,7 @@ function Home({ products, sources, cart: apiCart }) {
 
   const updateQuantityAndSetState = ( productId, variantId, delta, subtotal) => { 
     // calculate locally too
-    const mutation = makeCartMutation(productId)(variantId)(delta)(userId)(subtotal)
+    const mutation = makeCartMutation(productId)(variantId)(delta)(userId)(subtotal) (CARTSTATUS.auto)
     const nextCart = getNextCart (cart)(mutation)
     // set off post but don't wait for the response. The state will be updated automatically but for a more snappy experience we return this nextCart and update it on the client too. The server will revalidate when the response comes. TODO: error handling
     postNextCartState(nextCart)
