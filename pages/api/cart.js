@@ -1,50 +1,11 @@
 import nextConnect from 'next-connect';
 import middleware from '../../middleware/database';
-import { ObjectId } from "mongodb"
-import { getNextCart } from "../../lib/prima"
+import { initialCart } from "../../lib/prima"
 
 const handler = nextConnect();
 
 const S = require("sanctuary")
 const $ = require("sanctuary-def")
-
-const initialCart = {
-  owner: null,
-  created: new Date(),
-  items: {}
-}
-
-const getLatestCart = async carts => await carts.find({}, { sort: { "_id": -1 }, limit: 1 }).toArray()
-
-const grabCartsProducts = async (latestCart, productsCollection) => {
-  const productIds = S.unchecked.keys(S.prop("items")(latestCart))
-  const productObjectIds = S.map(ObjectId)(productIds)
-
-  const query = { "_id": { $in: productObjectIds } }
-  const ps = await productsCollection.find(query).toArray()
-  return ps
-}
-
-const addMetadataToProductList = products => latestCart => {
-  let totalPrice = 0
-  let itemCount = 0
-  const amendedProductList = S.unchecked.map(p => {
-    const newVariants = S.unchecked.map(v => {
-      const pId = S.prop("_id")(p)
-      const vId = S.prop("_id")(v)
-      const mbVariantQuantity = S.unchecked.gets(S.is($.FiniteNumber))([pId, vId])(S.prop("items")(latestCart))
-      const jQuantity = S.fromMaybe(0)(mbVariantQuantity)
-      const jPrice = S.fromMaybe(0)(S.get(S.is($.FiniteNumber))("price")(v))
-      const jPackSize = S.fromMaybe(0)(S.get(S.is($.FiniteNumber))("pack_size")(v))
-      totalPrice += (jQuantity * jPrice * jPackSize)
-      itemCount += jQuantity
-      return { ...v, quantity: jQuantity }
-    })(S.prop("variants")(p))
-    return { ...p, variants: newVariants }
-  }) (products)
-
-  return [amendedProductList, itemCount, totalPrice]
-}
 
 handler.use(middleware)
 
@@ -55,17 +16,17 @@ handler.get(async (req, res) => {
   // get latest cart or seed a new one, TODO: filter by user
   const latestCart = S.fromMaybe ({...initialCart}) (S.head (cart))
   
-  const responseObject = { cart: latestCart }
+  // const responseObject = { latestCart }
   
   // const { full } = req.query
   // if (full !== undefined) {
-  const productsCollection = await req.db.collection("products")
-  const products = await grabCartsProducts (latestCart, productsCollection)
-  const [amendedProductList, itemCount, totalPrice ] = addMetadataToProductList (products) (latestCart)
-  return res.status(200).json({ cart: { ...responseObject.cart, products: amendedProductList, itemCount, totalPrice }})
-  // }
+  // const productsCollection = await req.db.collection("products")
+  // const products = await grabCartsProducts (latestCart, productsCollection)
+  // const [amendedProductList, itemCount, totalPrice ] = addMetadataToProductList (products) (latestCart)
+  // return res.status(200).json({ cart: { ...responseObject.cart, products: amendedProductList, itemCount, totalPrice }})
+  // // }
 
-  // res.status(200).json(responseObject)
+  res.status(200).json(latestCart)
 });
 
 
@@ -81,13 +42,15 @@ handler.post(async (req, res) => {
   if (S.isJust(nextCart)) {
     const cart = S.maybeToNullable (nextCart)
     const result = await carts.insertOne(cart)
-    const productsCollection = await req.db.collection("products")
-    const products = await grabCartsProducts(cart, productsCollection)
-    const [amendedProductList, itemCount, totalPrice] = addMetadataToProductList (products)(cart)
-    return res.status(200).json({ cart: { ...cart, products: amendedProductList, itemCount, totalPrice } })
+    // const productsCollection = await req.db.collection("products")
+    // const products = await grabCartsProducts(cart, productsCollection)
+    // const [amendedProductList, itemCount, totalPrice] = addMetadataToProductList (products)(cart)/
+    console.log("POST /api/cart", cart)
+    console.log("POST result", result)
+    return res.status(200).json({ cart })
   }  
 
-  return res.status(400).json({ cart: S.maybeToNullable(nextCart) });
+  return res.status(400).json({ error: "Estrutura do carrinho inesperada. Erro de programador. Por favor tente novamente mais tarde." });
 });
 
 export default handler;

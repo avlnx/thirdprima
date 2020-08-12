@@ -40,7 +40,7 @@ const ProductRow = ({ product, viewingCart, updateProductQuantityBy }) => {
   // bail if no variants
   if (S.unchecked.any(S.isNothing)(data)) return invalidRender
 
-  const productIdValue = S.maybeToNullable (productId)
+  const productIdValue = S.maybeToNullable(productId)
 
   const indexedVariants = indexById(S.maybeToNullable(variants))
 
@@ -99,14 +99,14 @@ const ProductRow = ({ product, viewingCart, updateProductQuantityBy }) => {
       <Table.TextCell flexBasis={150} paddingY={majorScale(1)}>
         {/* <ActionButtons action={(delta) => updateProductQuantityBy(cart)(productId)(selectedVariantId)(delta)} /> */}
         <Pane
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="space-between">
-          <Button flex={"1"} appearance="minimal" onClick={() =>  updateProductQuantityBy(productIdValue, selectedVariantId, -Infinity)}
-                        intent="danger">remover</Button>
-          <IconButton flex={"1"} onClick={() =>  updateProductQuantityBy(productIdValue, selectedVariantId, -1)} icon={MinusIcon} />
-          <IconButton flex={"1"} onClick={() =>  updateProductQuantityBy(productIdValue, selectedVariantId, 1)} icon={PlusIcon} />
-                </Pane>
+          display="flex"
+          alignItems="center"
+          justifyContent="space-between">
+          <Button flex={"1"} appearance="minimal" onClick={() => updateProductQuantityBy(productIdValue, selectedVariantId, -Infinity)}
+            intent="danger">remover</Button> 
+          <IconButton flex={"1"} onClick={() => updateProductQuantityBy(productIdValue, selectedVariantId, -1, selected.price * selected.pack_size * -1)} icon={MinusIcon} />
+          <IconButton flex={"1"} onClick={() => updateProductQuantityBy(productIdValue, selectedVariantId, 1, selected.price * selected.pack_size * 1)} icon={PlusIcon} />
+        </Pane>
       </Table.TextCell>
     </Table.Row>
   )

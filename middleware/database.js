@@ -1,26 +1,26 @@
-// import { MongoClient } from 'mongodb';
-import nextConnect from 'next-connect';
+import {MongoClient} from "mongodb"
 
-const { MongoClient } = require ("mongodb")
+const MONGODB_URI = process.env.MONGODB_URI // or Atlas connection string
 
-const dbname = "seedr"
+const dbName = "seedr"
 
-const client = new MongoClient(process.env.MONGODB_URI, {
-  validateOptions: true,
-  connectTimeoutMS: 5000,
-  useUnifiedTopology: true,
-  useNewUrlParser: true,
-});
+let cachedDb = null
 
-async function database(req, res, next) {
-  if (!client.isConnected()) await client.connect();
-  req.dbClient = client;
-  req.db = client.db(dbname);
-  return next();
+export default async function connectToDatabase() {
+  console.log('=> connect to database')
+
+  if (cachedDb) {
+    console.log('=> using cached database instance')
+    return cachedDb
+  }
+
+  const client = new MongoClient(MONGODB_URI, {
+    validateOptions: true,
+    connectTimeoutMS: 5000,
+    useUnifiedTopology: true,
+    useNewUrlParser: true,
+  })
+  await client.connect()
+  cachedDb = client.db(dbName)
+  return cachedDb
 }
-
-const middleware = nextConnect();
-
-middleware.use(database);
-
-export default middleware;
