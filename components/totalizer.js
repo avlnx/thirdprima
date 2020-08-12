@@ -17,8 +17,6 @@ import { primaTheme } from "../theme"
 const S = require("sanctuary")
 
 const Totalizer = ({ viewingCart, total, loading, count, clearCart }) => {
-  console.log(clearCart)
-  debugger
   return (
     <Card elevation={1} margin={majorScale(2)} padding={majorScale(2)} display="flex" alignItems="center" justifyContent="space-between" background={"white"}>
       {loading ? <Spinner /> : null}
