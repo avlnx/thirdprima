@@ -1,6 +1,6 @@
-import {MongoClient} from "mongodb"
+import { MongoClient } from "mongodb"
 
-const MONGODB_URI = process.env.MONGODB_URI // or Atlas connection string
+const MONGODB_URI = process.env.MONGODB_URI
 
 const dbName = "seedr"
 
