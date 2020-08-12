@@ -35,7 +35,7 @@ function Home({ products, sources, cart: apiCart }) {
     const nextCart = getNextCart (cart)(mutation)
 
     // set off post but don't wait for the response. The state will be updated automatically but for a more snappy experience we return this nextCart and update it on the client too. The server will revalidate when the response comes. TODO: error handling
-    // postNextCartState(nextCart)
+    postNextCartState(nextCart)
 
     setCart(nextCart)
   }
