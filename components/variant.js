@@ -9,7 +9,7 @@ import {
   Strong,
   Text,
 } from "evergreen-ui"
-import { currency, numberPropOrZero, CartContext, indexById, findByIdInList } from "../lib/prima"
+import { currency, CartContext, findByIdInList, getCartQuantity } from "../lib/prima"
 
 const S = require("sanctuary")
 const $ = require("sanctuary-def")
@@ -33,10 +33,6 @@ const Variant = ({ variant, sources }) => {
   if (S.unchecked.any(S.isNothing)(data)) return invalidRender
 
   const [sourceIdValue, productIdValue, variantIdValue, packLabelValue, packUnitValue, priceValue, sourceValue] = S.unchecked.justs(data)
-
-  // const q = S.fromMaybe(0)(quantity)
-
-  const getCartQuantity = cart => productIdValue => variantIdValue => S.fromMaybe(0)(S.gets(S.is($.NonZeroValidNumber))([productIdValue, variantIdValue])(S.prop ("items") (cart)))
 
   return (
     <CartContext.Consumer>
