@@ -6,6 +6,7 @@ import {
   defaultTheme,
   Heading,
   majorScale,
+  minorScale,
   Pane,
   Pill,
   ShoppingCartIcon,
@@ -15,19 +16,22 @@ import Link from "next/link"
 import { primaTheme } from "../theme"
 const S = require("sanctuary")
 
-const Totalizer = ({ viewingCart, total, loading, count }) => {
+const Totalizer = ({ viewingCart, total, loading, count, clearCart }) => {
+  console.log(clearCart)
+  debugger
   return (
     <Card elevation={1} margin={majorScale(2)} padding={majorScale(2)} display="flex" alignItems="center" justifyContent="space-between" background={"white"}>
       {loading ? <Spinner /> : null}
-      <Pane display="flex" alignItems="center">
-        <Badge color="purple" marginRight={majorScale(1)}>Total</Badge>
+      <Pane display="flex" flexDirection="column" alignItems="flex-start">
+        <Badge color="purple" marginBottom={minorScale(1)}>Total</Badge>
         <Heading size={500}>{total}</Heading>
       </Pane>
       <Pane>
-        <Pill display="inline-flex" color="red" isSolid margin={8}>{count}</Pill>
+        <Button appearance="minimal" onClick={() => clearCart()} intent="danger">Limpar</Button>
+        <Pill style={{ position: "relative", bottom: "25px", left: "5px", zIndex: "10"}} display="inline-block" color="red" isSolid marginRight={-minorScale(1)}  >{count}</Pill>
       {viewingCart ?
           <><Link href="/" >
-            <Button appearance="minimal" intent="danger">Cancelar</Button>
+            <Button appearance="minimal" intent="danger">Voltar</Button>
           </Link>
           <Button height={48} appearance="primary" style={S.prop("primaryButton")(primaTheme)} onClick={() => alert("promote this bitch")} iconAfter={ArrowRightIcon}>Finalizar pedido</Button></>
           :

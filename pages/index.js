@@ -26,6 +26,12 @@ function Home({ products, sources, cart: apiCart }) {
     S.sum,
   ]) (cart)
 
+  const clearCart = () => {
+    const nextCart = { ...cart, total: 0, items: {} }
+    setCart(nextCart)
+    postNextCartState(nextCart)
+  }
+
   const userId = S.maybeToNullable(S.get(S.is($.String))("sub")(user))
 
   const updateQuantityAndSetState = ( productId, variantId, delta, subtotal) => { 
@@ -43,7 +49,7 @@ function Home({ products, sources, cart: apiCart }) {
     <Layout>
       <CartContext.Provider value={cart}>
         <ProductList updateProductQuantityBy={boundUpdateQuantity} products={products} sources={indexedSources} />
-        <Totalizer viewingCart={false} total={S.fromMaybe("R$ 0")(S.map(currency.format)(total))} count={cartItemsCount} />
+        <Totalizer viewingCart={false} total={S.fromMaybe("R$ 0")(S.map(currency.format)(total))} count={cartItemsCount} clearCart={clearCart} />
       </CartContext.Provider>
     </Layout>
   )

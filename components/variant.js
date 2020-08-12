@@ -15,7 +15,6 @@ const S = require("sanctuary")
 const $ = require("sanctuary-def")
 
 const Variant = ({ variant, sources }) => {
-  debugger
   const sourceId = S.get(S.is($.String))("source")(variant)
   const source = findByIdInList (S.fromMaybe ("") (sourceId)) (sources)
   const productId = S.get(S.is($.String))("product")(variant)
