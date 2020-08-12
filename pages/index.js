@@ -3,7 +3,13 @@ import { getProducts, getSources, getCart } from "../lib/prima"
 import connect from "../lib/db"
 
 function Home({ products, sources, cart: apiCart }) {
-  return (<Layout products={products} cart={apiCart.cart} sources={sources} />)
+  // const clearCart = () => {
+  //   const nextCart = { ...apiCart, total: 0, items: {} }
+  //   setCart(nextCart)
+  //   postNextCartState(nextCart)
+  // }
+
+  return (<Layout inCart={false} products={products} cart={apiCart.cart} sources={sources} />)
 }
 
 export default Home

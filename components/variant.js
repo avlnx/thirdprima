@@ -15,15 +15,15 @@ const S = require("sanctuary")
 const $ = require("sanctuary-def")
 
 const Variant = ({ variant, sources }) => {
-  const sourceId = S.get(S.is($.String))("source")(variant)
-  const source = findByIdInList (S.fromMaybe ("") (sourceId)) (sources)
+const sourceId = S.get(S.is($.String))("source")(variant)
   const productId = S.get(S.is($.String))("product")(variant)
   const variantId = S.get(S.is($.String))("_id")(variant)
   const packLabel = S.get(S.is($.String))("pack_label")(variant)
   const packUnit = S.get(S.is($.String))("pack_unit")(variant)
   // TODO: pick price based on user preference (simples, deferred)
   const price = S.get(S.is($.NonZeroValidNumber))("price")(variant)
-
+  // const { source, product, _id, pack_label, pack_unit, price } = variant
+  const source = findByIdInList (S.fromMaybe("") (sourceId)) (sources)
   const data = [sourceId, productId, variantId, packLabel, packUnit, price, source]
 
   const invalidRender = <Alert intent="warning" title="Esta variação não está se comportando." />

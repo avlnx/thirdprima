@@ -26,16 +26,10 @@ const ProductList = ({ viewingCart, products, sources, updateProductQuantityBy }
     
     return (
         <>
-        <SearchBox />
-            <Card elevation={1} margin={majorScale(2)} padding={0} flex="1" overflowY="auto" background="white">
+        
+            <Card elevation={2} margin={majorScale(2)} padding={0} flex="1" overflowY="auto" background="white">
                 <Table>
-                    <Table.Head style={viewingCart ? { "background": brand } : undefined} >
-                        {viewingCart && (<Table.TextHeaderCell >
-                                <Text size={300} textTransform="uppercase" color={S.props(["palette", "blue", "lightest"])(primaTheme)}>Seu carrinho</Text>
-                                <ShoppingCartIcon size={16} color="white" marginLeft={ majorScale (1) } />
-                            </Table.TextHeaderCell>
-                            )}
-                    </Table.Head>
+                    
                     <Table.Body>
                         {loading ? (
                             <Pane display="flex" alignItems="center" justifyContent="center" height={"50vh"}>

@@ -1,9 +1,10 @@
 import { Pane, Spinner } from "evergreen-ui"
+import { brand } from "../theme"
 
-const SpinnerBox = () => {
+const SpinnerBox = ({ backgroundColor }) => {
   return (
-    <Pane display="flex" alignItems="center" justifyContent="center" minHeight={200}>
-      <Spinner />
+    <Pane background={backgroundColor || brand} display="flex" flex="1" alignItems="center" justifyContent="center" >
+      <Spinner size={128} />
     </Pane>
   )
 }

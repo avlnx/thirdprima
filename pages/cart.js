@@ -3,7 +3,7 @@ import { getSources, getFullCart } from "../lib/prima"
 import connect from "../lib/db"
 
 function Cart({ sources, cart: apiCart }) {
-  return (<Layout products={apiCart.cart.products} cart={apiCart.cart} sources={sources} />)
+  return (<Layout clearCart={clearCart} products={apiCart.cart.products} sources={sources} inCart={true} />)
 }
 
 export default Cart
