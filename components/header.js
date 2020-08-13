@@ -1,6 +1,7 @@
-import Link from 'next/link'
+import Link from "next/link"
 import { Badge, Button, Heading, majorScale, minorScale, Pane, Text } from "evergreen-ui"
 import { brand, palette, primaTheme } from "../theme"
+import { signOut } from "next-auth/client"
 
 const S = require("sanctuary")
 
@@ -15,10 +16,8 @@ function Header({ user, loading }) {
       {authenticated &&
         <>
           <Heading size={100} color={S.prop("base")(palette)}>Olá {S.fromMaybe("")(S.get(_ => true)("name")(user))}</Heading>
-          <Link href="/api/logout">
-            <Button appearance="minimal" is="a" style={{ color: "white", textDecoration: "underline"}} height={24}>
-              Sair</Button>
-          </Link>
+          <Button appearance="minimal" onClick={signOut} style={{ color: "white", textDecoration: "underline"}} height={24}>
+            Sair</Button>
         </>
       }
     </Pane>
