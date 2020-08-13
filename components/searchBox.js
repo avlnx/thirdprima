@@ -17,9 +17,10 @@ const SearchBox = () => {
         <SearchInput placeholder="Buscar produto" width="100%" onChange={e => setQuery (e.target.value) } />
       </Pane>
       <Pane marginLeft={majorScale(2)}>
-        <Link href={`/search/?query=${quote (query)}`}>
+        <Link href={{ pathname: '/search', query: { keyword: quote(query) } }}><Button iconAfter={SearchIcon}>Buscar</Button></Link>
+        {/* <Link href={`/search/?query=${quote (query)}`}>
           <Button iconAfter={SearchIcon}>Buscar</Button>
-        </Link>
+        </Link> */}
       </Pane>
     </Card>
   )

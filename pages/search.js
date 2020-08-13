@@ -1,6 +1,7 @@
-import { useState } from "react"
-import Layout from '../../components/layout'
-import { useFetchUser } from '../../lib/user'
+// import { useState } from "react"
+import Layout from '../components/layout'
+// import { useRouter } from 'next/router'
+// import { useFetchUser } from '../../lib/user'
 import {
   Alert,
   ArrowLeftIcon,
@@ -9,108 +10,55 @@ import {
   Pane,
   Spinner,
 } from "evergreen-ui"
-import BlockSwitch from "../../components/switch"
-import ProductList from "../../components/productList"
-import Paginator from "../../components/paginator"
-import Totalizer from "../../components/totalizer"
-import LoginBox from "../../components/loginBox"
-import SpinnerBox from "../../components/spinnerBox"
+// import BlockSwitch from "../../components/switch"
+// import ProductList from "../../components/productList"
+// import Paginator from "../../components/paginator"
+// import Totalizer from "../../components/totalizer"
+// import LoginBox from "../../components/loginBox"
+// import SpinnerBox from "../../components/spinnerBox"
+import ErrorResponse from "../components/errorResponse"
+import connect from "../lib/db"
+import { parseJsonFromListOfObjects, parseJsonFromObject, getSources, getCart } from "../lib/prima"
 
 const S = require("sanctuary")
 const $ = require("sanctuary-def")
 
-function Search({ searchResults, sources, cart: apiCart, query }) {
+function Search({ products, sources, cart: apiCart, query, error }) {
 
-  const mbSourceList = S.get(S.is($.Array($.Object)))("sources")(sources)
+  if (error) return <ErrorResponse />
 
-  console.log("cart", cart)
-  const currentlyLoading = (S.isNothing(mbSourceList) || loading)
+  const pageDescription = <Alert
+    intent="none"
+    title={`Buscando ${query.keyword}`}
+    margin={majorScale(2)}
+    appearance="card" />
 
-  const products = S.get(S.is($.Array($.Object)))("products")(searchResults)
-
-  return (<Layout inSearch={true} products={products} cart={apiCart.cart} sources={sources} />)
-  // <Layout user={user} loading={loading} hideHeader={!loading && !user }>
-
-  //   <Pane margin={majorScale(2)} display="flex" alignItems="center" justifyContent="flex-start">
-  //     <Link href="/">
-  //       <Button marginRight={majorScale(1)} appearance="minimal" intent="warning" height={40} iconBefore={ArrowLeftIcon}>Voltar</Button>
-  //     </Link>
-  //     <Alert
-  //       intent="warning"
-  //       title={`Buscando ${q}`}
-  //       flex="1"
-  //     />
-  //   </Pane>
-
-  //   {/* {currentlyLoading && <SpinnerBox />} */}
-
-  //   {!currentlyLoading && !user && <LoginBox />}
-
-  //   {user && (
-  //     <>
-
-  //       <ProductList user={user} loading={currentlyLoading} products={S.fromMaybe ([])(products)} sources={S.fromMaybe ([]) (mbSourceList) } />
-
-  //       <Totalizer loading={currentlyLoading} viewingCart={false} total={"R$ 100.099,35"} />
-  //     </>
-  //   )}
-  // </Layout>
+  return (<Layout products={products} cart={apiCart.cart} sources={sources} inSearch={true} pageDescription={pageDescription} />)
 }
 
 export default Search
 
-export async function getServerSideProps({ req, res }) {
+export async function getServerSideProps({ query }) {
   debugger
-  const query = req.query.query
-
+  // const router = useRouter()
+  // console.log(router.query);
+  const searchQuery = S.fromMaybe("") (S.value ("keyword") (query))
   const db = await connect()
-
   const collection = await db.collection('products')
-
-  // const queryString = { $text: { $search: q } }
   const q = { $text: { $search: query } }
-
-  const products = await collection.find({ $text: { $search: query } }).toArray()
-
-  // debugger
-  // res.status(200).json({ products: products });
-
-  const sources = JSON.parse(await getSources(db))
-
-  const cart = JSON.parse(await getCart(db))
-
-
-
-  // const cart = JSON.parse(await getCart(db))
+  const products = parseJsonFromListOfObjects (JSON.stringify(await collection.find({ $text: { $search: searchQuery } }).toArray()))
+  const sources = parseJsonFromListOfObjects(await getSources(db))
+  //oko
+  const cart = parseJsonFromObject(await getCart(db))
+  if (S.unchecked.any(S.isNothing)([sources, cart, products]))
+    return { props: { error: true } }
 
   return {
     props: {
-      products,
-      sources,
-      cart,
+      products: S.maybeToNullable(products),
+      sources: S.maybeToNullable(sources),
+      cart: S.maybeToNullable(cart),
+      query: query,
     }
   }
 }
-
-// export const getStaticPaths = async () => {
-//   return {
-//     paths: [],
-//     fallback: true
-//   }
-// }
-
-// export const getStaticProps = async (context) => {
-//   const { query } = context.params
-//   const res = await fetch(`http://localhost:3000/api/search/${query}`)
-//   const searchResults = await res.json()
-
-//   const resSources = await fetch(`http://localhost:3000/api/sources`)
-//   const sources = await resSources.json()
-
-//   return {
-//     props: {
-//       searchResults,
-//       sources,
-//     }
-//   }
-// }

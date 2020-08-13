@@ -34,14 +34,15 @@ const Totalizer = ({ inCart: viewingCart, total, loading, count, clearCart }) =>
       {viewingCart ?
           <>
           <Button height={48} appearance="primary" style={{ background: S.props(["colors", "intent", "success"]) (primaTheme)}} onClick={() => alert("promote this bitch")} iconAfter={ArrowRightIcon}>Finalizar pedido</Button>
-            <Link href="/" >
-              <Button appearance="minimal" intent="danger">Voltar</Button>
-            </Link>
+            
           </>
           :
           <><Link href="/cart" >
             <Button height={48} appearance="primary" style={S.prop("primaryButton")(primaTheme)} iconAfter={ShoppingCartIcon}>Carrinho</Button>
           </Link></>}
+        <Link href="/" >
+          <Button appearance="minimal" intent="danger">Voltar</Button>
+        </Link>
         </Pane>
     </Card>
   )
