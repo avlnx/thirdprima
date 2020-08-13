@@ -31,7 +31,6 @@ export default async (req, res) => {
     const db = await connect()
     const carts = await db.collection("carts")
 
-    // debugger
     const nextCart = S.parseJson(S.is($.Object))(S.prop("body")(req))
 
     if (S.isJust(nextCart)) {
