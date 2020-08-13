@@ -13,6 +13,7 @@ import {
   Heading,
   minorScale,
   majorScale,
+  Alert,
   Pane,
   ShoppingCartIcon,
   Spinner,
@@ -24,7 +25,7 @@ const S = require('sanctuary')
 const $ = require ("sanctuary-def")
 
 
-const Layout = ({ products, cart: apiCart, sources, children, inCart }) => {
+const Layout = ({ products, cart: apiCart, sources, children, inIndex, inCart, inSearch, searchQuery, pageDescription }) => {
   const [cart, setCart] = useState(apiCart)
   const { user, loading } = useFetchUser();
   
@@ -81,10 +82,9 @@ const Layout = ({ products, cart: apiCart, sources, children, inCart }) => {
           || (isAuthenticated && 
             <CartContext.Provider value={cart}>
               <SearchBox />
-              {inCart && <Card elevation={1} background={brand} margin={majorScale(2)} marginBottom={minorScale(1)} padding={minorScale(1)} display="flex" alignItems="center" justifyContent="flex-start">
-                <ShoppingCartIcon color={lightPrimary} />
-                <Heading size={200} padding={minorScale(1)} marginLeft={minorScale(2)} color={lightPrimary}>Seu carrinho</Heading>
-              </Card>}
+              
+            { pageDescription }
+
               <ProductList updateProductQuantityBy={boundUpdateQuantity} products={products} sources={indexedSources} />
               
               <Totalizer inCart={inCart} total={S.fromMaybe("R$ 0")(S.map(currency.format)(total))} count={cartItemsCount} clearCart={boundClearCart} />

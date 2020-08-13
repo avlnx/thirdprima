@@ -9,13 +9,13 @@ import {
   Small,
   Text,
 } from "evergreen-ui"
-import { brand, palette } from "../theme"
+import { brand, palette, primaTheme } from "../theme"
 
 const S = require ("sanctuary")
 
 const LoginBox = () => {
-  return <Pane display="flex" height="100vh" alignItems="center" justifyContent="center" >
-    <Card flexBasis={360} background={brand} elevation={4} padding={majorScale(6)} display="flex" flexDirection="column">
+  return <Pane display="flex" height="100vh" alignItems="center" justifyContent="center" background={S.props (["palette", "purple", "base"])(primaTheme)}>
+    <Card flexBasis={360} background={brand} elevation={3} padding={majorScale(6)} display="flex" flexDirection="column">
       <Pane display="flex" >
         <LockIcon color={S.prop("lightest")(palette)} marginRight={majorScale(1)} />
         <Heading color={"white"} size={200}

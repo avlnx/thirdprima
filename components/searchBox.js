@@ -6,7 +6,7 @@ import { brand, palette } from "../theme"
 const SearchBox = () => {
   const [ query, setQuery ] = useState ("")
 
-  const pq = q => (`\"${q}\"`)
+  const quote = q => (`\"${q}\"`)
 
   return (
     <Card display="flex" elevation={1} margin={majorScale(2)} padding={majorScale(1)} alignItems="center" justifyContent="flex-start" background={ brand }>
@@ -17,7 +17,7 @@ const SearchBox = () => {
         <SearchInput placeholder="Buscar produto" width="100%" onChange={e => setQuery (e.target.value) } />
       </Pane>
       <Pane marginLeft={majorScale(2)}>
-        <Link href={`/busca/${pq (query)}`}>
+        <Link href={`/search/?query=${quote (query)}`}>
           <Button iconAfter={SearchIcon}>Buscar</Button>
         </Link>
       </Pane>
