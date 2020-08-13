@@ -6,20 +6,20 @@ const $ = require("sanctuary-def")
 
 const grabMessageTemplate = format => key => {
   const header = `
-                _\n
-    ____  _____(_)___ ___  ____ _\n
-   / __ \\/ ___/ / __ \`__ \\/ __ \`/\n
-  / /_/ / /  / / / / / / / /_/ /\n
- / .___/_/  /_/_/ /_/ /_/\\____/      __\n
-/_/  ____ ___  ____ ______/ /_____  / /_\n
-    / __ \`__ \\/ __ \`/ ___/ //_/ _ \\/ __/\n
- _ / / / / / / /_/ / /  / ,< /  __/ /_\n
-(_)_/ /_/ /_/\\__,_/_/  /_/|_|\\___/\\__/\n
+                _
+    ____  _____(_)___ ___  ____ _
+   / __ \\/ ___/ / __ \`__ \\/ __ \`/
+  / /_/ / /  / / / / / / / /_/ /
+ / .___/_/  /_/_/ /_/ /_/\\____/      __
+/_/  ____ ___  ____ ______/ /_____  / /_
+    / __ \`__ \\/ __ \`/ ___/ //_/ _ \\/ __/
+ _ / / / / / / /_/ / /  / ,< /  __/ /_
+(_)_/ /_/ /_/\\__,_/_/  /_/|_|\\___/\\__/
 `
   const dir = {
     plain: {
       newPurchase: (data) => `     
-${header}
+${header}\n
 Oi ${S.prop("name")(data)}! Aqui é a Prima.\n
 Já estamos preparando tudo para darmos continuidade no seu pedido. Agora é só aguardar que nosso time vai entrar em contato.\n\n
 
@@ -56,7 +56,6 @@ const makeMessage = data => {
     subject: S.prop("subject")(data),
     text: grabPlainMessageTemplate(key)(data),
     html: grabHtmlMessageTemplate(key)(data),
-    // html: '<p>Oi! Só pra avisar que já estamos preparando seu pedido ok? Agora é só aguardar nosso contato.<br/><br/>Obrigada,<br/>Prima</p>',
   }
 }
 
@@ -69,14 +68,6 @@ export default async (req, res) => {
     sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 
     const data = S.maybeToNullable(msgData)
-
-    // // debug construct below, replace with data
-    // const dataTemplate = {
-    //   type: "newPurchase",
-    //   to: "tdasilva@tuta.io",
-    //   name: "Thyago",
-    //   subject: "Seu pedido foi confirmado."
-    // }
 
     sgMail.send(makeMessage(data))
 

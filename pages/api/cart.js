@@ -7,10 +7,9 @@ const $ = require("sanctuary-def")
 const makePurchaseNotificationData = cart => {
   return {
     key: "newPurchase",
-    to: "tdasilva@tuta.io",
-    name: S.prop("owner")(cart),
+    to: S.props(["user", "name"])(cart),
+    name: S.props(["user", "nickname"])(cart),
     subject: "Seu pedido foi recebido com sucesso.",
-    cart,
   }
 }
 
