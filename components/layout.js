@@ -104,7 +104,7 @@ const Layout = ({ products, cart: apiCart, sources, children, inIndex, inCart, i
 
               { message && <Alert marginX={majorScale (2)} intent="warning" title={message} />}
 
-              <ProductList updateProductQuantityBy={boundUpdateQuantity} products={products} sources={indexedSources} />
+              <ProductList updateProductQuantityBy={boundUpdateQuantity} products={products} sources={indexedSources} user={user} />
               
               <Totalizer inCart={inCart} total={S.fromMaybe("R$ 0")(S.map(currency.format)(total))} count={cartItemsCount} clearCart={boundClearCart} promoteCartToPurchase={boundPromoteCartToPurchase} />
               <Header user={user} loading={loading} />

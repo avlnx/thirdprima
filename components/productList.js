@@ -18,13 +18,13 @@ import Link from "next/link"
 const S = require("sanctuary")
 const $ = require("sanctuary-def")
 
-const ProductList = ({ viewingCart, products, sources, updateProductQuantityBy }) => {
+const ProductList = ({ viewingCart, products, sources, updateProductQuantityBy, user }) => {
   // debugger
   const productList = products
   const [session, loading] = useSession()
-  const mbUser = S.get(S.is($.Object))("user")(session)
-  const isAuthenticated = S.isJust(mbUser)
-  const user = S.fromMaybe({})(mbUser)
+  //   const mbUser = S.get(S.is($.Object))("user")(session)
+  //   const isAuthenticated = S.isJust(mbUser)
+  //   const user = S.fromMaybe({})(mbUser)
 
   return (
     <>
