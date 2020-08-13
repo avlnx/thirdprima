@@ -1,4 +1,4 @@
-import Layout from '../components/layout'
+import Layout from "../components/layout"
 import ErrorResponse from "../components/errorResponse"
 import { getSources, getFullCart, parseJsonFromObject, parseJsonFromListOfObjects } from "../lib/prima"
 import connect from "../lib/db"
@@ -23,7 +23,7 @@ function Cart({ sources, cart: apiCart, error }) {
 
 export default Cart
 
-export async function getServerSideProps({ req, res }) {
+export async function getServerSideProps(context) {
   const db = await connect()
   const sources = parseJsonFromListOfObjects (await getSources(db))
   const cart = parseJsonFromObject (await getFullCart(db))

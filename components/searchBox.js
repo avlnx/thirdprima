@@ -11,13 +11,15 @@ const SearchBox = () => {
   return (
     <Card display="flex" elevation={1} margin={majorScale(2)} padding={majorScale(1)} alignItems="center" justifyContent="flex-start" background={ brand }>
       <Pane marginX={majorScale (2)}>
-        <Heading size={100} color="white">PRIMA</Heading>
+        <Link href="/">
+          <Heading size={100} color="white" style={{ cursor: "pointer"}}>PRIMA</Heading>
+        </Link>
       </Pane>
       <Pane flex="1">
         <SearchInput placeholder="Buscar produto" width="100%" onChange={e => setQuery (e.target.value) } />
       </Pane>
       <Pane marginLeft={majorScale(2)}>
-        <Link href={{ pathname: '/search', query: { keyword: quote(query) } }}><Button iconAfter={SearchIcon}>Buscar</Button></Link>
+        <Link href={{ pathname: "/search", query: { keyword: quote(query) } }}><Button iconAfter={SearchIcon}>Buscar</Button></Link>
         {/* <Link href={`/search/?query=${quote (query)}`}>
           <Button iconAfter={SearchIcon}>Buscar</Button>
         </Link> */}

@@ -1,66 +1,73 @@
-// import nextConnect from 'next-connect';
 import connect from "../../lib/db"
-import { initialCart } from "../../lib/prima"
+import { initialCart, CARTSTATUS } from "../../lib/prima"
 
 const S = require("sanctuary")
 const $ = require("sanctuary-def")
 
-export default async (req, res) => {
-  if (req.method === 'POST') {
-    const db = await connect()
-    const carts = await db.collection("carts")
-
-    const nextCart = S.parseJson(S.is($.Object))(S.prop("body")(req))
-
-    // TODO: validate this cart above or at least do something meaningful 
-    // like returning an error and parsing the error on the client 
-
-    if (S.isJust(nextCart)) {
-      const cart = S.maybeToNullable(nextCart)
-      const result = await carts.insertOne(cart)
-      return res.status(200).json({ cart })
-    }
-
-    return res.status(400).json({ error: "Estrutura do carrinho inesperada. Por favor tente novamente mais tarde." })
-  } else {
-    // TODO: Filter by owner
-    const db = await connect()
-    const carts = await db.collection("carts")
-    const cart = await getLatestCart(carts)
-
-    // get latest cart or seed a new one, TODO: filter by user
-    const latestCart = S.fromMaybe({ ...initialCart })(S.head(cart))
-    res.status(200).json(latestCart)
+const makePurchaseNotificationData = cart => {
+  return {
+    key: "newPurchase",
+    to: "tdasilva@tuta.io",
+    name: S.prop("owner")(cart),
+    subject: "Seu pedido foi recebido com sucesso.",
+    cart,
   }
 }
 
+const userInitialCart = owner => {
+  return { ...initialCart, owner: owner}
+}
 
-// handler.get( (req, res) => {
-//   // TODO: Filter by owner
-//   const db = await connect()
-//   const carts = await db.collection("carts")
-//   const cart = await getLatestCart (carts)
+const notifyPurchase = async cart => {
+  const msg = makePurchaseNotificationData(cart)
+  const emailResponse = await fetch(`${process.env.BASE_URL}/api/email`, {
+    method: "post",
+    body: JSON.stringify(msg)
+  })
+  return emailResponse
+}
 
-//   // get latest cart or seed a new one, TODO: filter by user
-//   const latestCart = S.fromMaybe ({...initialCart}) (S.head (cart))
-//   res.status(200).json(latestCart)
-// })
+export default async (req, res) => {
+  if (req.method === "POST") {
+    const db = await connect()
+    const carts = await db.collection("carts")
 
+    // debugger
+    const nextCart = S.parseJson(S.is($.Object))(S.prop("body")(req))
 
-// handler.post(async (req, res) => {
-//   const db = await connect()
-//   const carts = await db.collection("carts")
+    if (S.isJust(nextCart)) {
+      const cart = S.maybeToNullable(nextCart)
+      // to make a "purchase" which is just a cart with a status of "pending"
+      // post a nextCart here with the same cart but with a status of pending
+      // then here we check for the presence of that status and if found 
+      // we notify people and possibly respond differently
+      const status = S.prop("status")(cart)
+      if (status === CARTSTATUS.purchasePending) {
+        // new purchase
+        // insert this cart and also replace with an empty one on success
+        const result = await carts.insertOne(cart)
+        if (S.prop ("insertedCount") (result) === 1) {
+          // success, insert seed cart to reset and send message
+          const result2 = await carts.insertOne(userInitialCart(S.prop ("owner") (cart)))
+          // notify purchase
+          const emailResponse = await notifyPurchase (cart)
+          if (S.prop("insertedCount")(result2) === 1 && emailResponse.status === 200) {
+            return res.status(200).json({ success: "Tudo certo. Obrigada pela sua compra. Vamos preparar seu pedido e entraremos em contato em breve." })
+          } else {
+            // TODO: actually notify me
+            return res.status(500).json({ error: "Ocorreu algum problema confirmando seu pedido. Por favor tente novamente mais tarde, nossos engenheiros já foram notificados do problema." })
+          }
+        }
+      } 
+      // regular cart
+      const result = await carts.insertOne(cart)
+      if (S.prop ("insertedCount") (result) === 1) {
+        return res.status(200).json({ cart })
+      }
+    }
 
-//   const nextCart = S.parseJson(S.is($.Object))(S.prop("body")(req))
-
-//   // TODO: validate this cart above or at least do something meaningful 
-//   // like returning an error and parsing the error on the client 
-
-//   if (S.isJust(nextCart)) {
-//     const cart = S.maybeToNullable (nextCart)
-//     const result = await carts.insertOne(cart)
-//     return res.status(200).json({ cart })
-//   }  
-
-//   return res.status(400).json({ error: "Estrutura do carrinho inesperada. Por favor tente novamente mais tarde." })
-// })
+    return res.status(500).json({ error: "Ocorreu um erro inesperado. Por favor tente novamente mais tarde." })
+  } else {
+    res.status(400).json({ error: "Método inesperado."})
+  }
+}

@@ -1,13 +1,14 @@
-import Head from 'next/head'
-import Header from './header'
+import Head from "next/head"
+import Header from "./header"
 import { useState } from "react"
-import { useFetchUser } from '../lib/user'
+import { useFetchUser } from "../lib/user"
 import ProductList from "../components/productList"
 import Paginator from "../components/paginator"
 import Totalizer from "../components/totalizer"
 import LoginBox from "../components/loginBox"
-import { currency, updateProductQuantityBy, numberPropOrZero, makeCartMutation, postNextCartState, getNextCart, getProducts, getSources, getCart, CartContext, indexById, CARTSTATUS } from "../lib/prima"
+import { currency, updateProductQuantityBy, numberPropOrZero, makeCartMutation, postNextCartState, getNextCart, getProducts, getSources, getCart, CartContext, indexById, CARTSTATUS, initialCart } from "../lib/prima"
 import { primaTheme, brand } from "../theme"
+import { useRouter } from "next/router"
 import {
   Card,
   Heading,
@@ -17,17 +18,18 @@ import {
   Pane,
   ShoppingCartIcon,
   Spinner,
-} from 'evergreen-ui'
+} from "evergreen-ui"
 import SpinnerBox from "./spinnerBox"
 import SearchBox from "./searchBox"
 
-const S = require('sanctuary')
+const S = require("sanctuary")
 const $ = require ("sanctuary-def")
 
-
-const Layout = ({ products, cart: apiCart, sources, children, inIndex, inCart, inSearch, searchQuery, pageDescription }) => {
+const Layout = ({ products, cart: apiCart, sources, children, inIndex, inCart, inSearch, searchQuery, pageDescription, msg }) => {
   const [cart, setCart] = useState(apiCart)
-  const { user, loading } = useFetchUser();
+  const { user, loading } = useFetchUser()
+  const [ message, setMessage ] = useState(msg)
+  const router = useRouter()
   
   const mbUser = S.get (S.is ($.String)) ("sub") (user)
   
@@ -46,11 +48,31 @@ const Layout = ({ products, cart: apiCart, sources, children, inIndex, inCart, i
     S.sum,
   ])(cart)
 
+  const goToIndex = (msg) => {
+    router.push({
+      pathname: "/",
+      query: { msg },
+    })
+  }
+
   const clearCart = () => {
     const nextCart = S.unchecked.remove ("_id") ({ ...apiCart, total: 0, items: {} })
-    setCart(nextCart)
     postNextCartState(nextCart)
+    setCart(nextCart)
   }
+
+  const flashMsg = msg => {
+    // todo setTimeout to 5s and clear msg?
+    setMessage (msg)
+  }
+
+  const promoteCartToPurchase = async () => {
+    const nextCart = S.unchecked.remove ("_id") ({ ...apiCart, status: CARTSTATUS.purchasePending })
+    const result = await postNextCartState(nextCart)
+    const msg = S.maybeToEither (result => S.prop ("error") (result)) (S.value ("success") (result))
+    S.either (flashMsg) (goToIndex) (msg)
+  }
+  const boundPromoteCartToPurchase = promoteCartToPurchase.bind()
   
   const boundClearCart = clearCart.bind()
   
@@ -83,11 +105,13 @@ const Layout = ({ products, cart: apiCart, sources, children, inIndex, inCart, i
             <CartContext.Provider value={cart}>
               <SearchBox />
               
-            { pageDescription }
+              { pageDescription }
+
+              { message && <Alert marginX={majorScale (2)} intent="warning" title={message} />}
 
               <ProductList updateProductQuantityBy={boundUpdateQuantity} products={products} sources={indexedSources} />
               
-              <Totalizer inCart={inCart} total={S.fromMaybe("R$ 0")(S.map(currency.format)(total))} count={cartItemsCount} clearCart={boundClearCart} />
+              <Totalizer inCart={inCart} total={S.fromMaybe("R$ 0")(S.map(currency.format)(total))} count={cartItemsCount} clearCart={boundClearCart} promoteCartToPurchase={boundPromoteCartToPurchase} />
               {!hideHeader && <Header user={user} loading={loading} />}
             </CartContext.Provider>)
         }

@@ -1,4 +1,4 @@
-import Layout from '../components/layout'
+import Layout from "../components/layout"
 import { getProducts, getSources, getCart, parseJsonFromListOfObjects, parseJsonFromObject } from "../lib/prima"
 import connect from "../lib/db"
 import { Alert, majorScale, Pane } from "evergreen-ui"
@@ -6,7 +6,7 @@ import ErrorResponse from "../components/errorResponse"
 const S = require ("sanctuary")
 const $ = require ("sanctuary-def")
 
-const Home = ({ products, sources, cart: apiCart, error }) => {
+const Home = ({ products, sources, cart: apiCart, error, msg }) => {
   
   if (error) return <ErrorResponse />
   const pageDescription = <Alert
@@ -16,12 +16,12 @@ const Home = ({ products, sources, cart: apiCart, error }) => {
     appearance="card"
   >Eu busco os melhores preços do momento nos fornecedores que você já confia e conhece. Você pode fazer sua compra por aqui mesmo e nós cuidamos dos detalhes do seu pedido.</Alert>
 
-  return (<Layout inCart={false} products={products} inIndex={true} cart={apiCart.cart} sources={sources} pageDescription={pageDescription} />)
+  return (<Layout products={products} msg={msg} inIndex={true} cart={apiCart.cart} sources={sources} pageDescription={pageDescription} />)
 }
 
 export default Home
 
-export async function getServerSideProps({ req, res }) {
+export async function getServerSideProps({ req, res, query }) {
   const db = await connect()
   const products = parseJsonFromListOfObjects (await getProducts(db))
   const sources = parseJsonFromListOfObjects (await getSources(db))
@@ -35,6 +35,7 @@ export async function getServerSideProps({ req, res }) {
       products: S.maybeToNullable (products),
       sources: S.maybeToNullable (sources),
       cart: S.maybeToNullable (cart),
+      msg: S.fromMaybe("") (S.value ("msg") (query)),
     }
   }
 }

@@ -24,5 +24,9 @@
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "sanctuary": "^3.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^7.6.0",
+    "eslint-plugin-react": "^7.20.6"
   }
 }
