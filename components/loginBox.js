@@ -10,6 +10,7 @@ import {
   Text,
 } from "evergreen-ui"
 import { brand, palette, primaTheme } from "../theme"
+import { signIn } from "next-auth/client"
 
 const S = require ("sanctuary")
 
@@ -21,12 +22,12 @@ const LoginBox = () => {
         <Heading color={"white"} size={200}
           marginBottom={majorScale(2)}>
           PRIMA
-                </Heading>
+        </Heading>
       </Pane>
 
-      <Button intent="success" appearance="primary" is="a" href="/api/login" iconAfter={<PersonIcon />} flex={1} height={32} justifyContent="end" alignItems="center">
+      <Button intent="success" appearance="primary" onClick={signIn} iconAfter={<PersonIcon />} flex={1} height={32} justifyContent="end" alignItems="center">
         Iniciar Sessão
-            </Button>
+      </Button>
       <Text marginTop={majorScale(3)} color={S.prop("lightest")(palette)}>
         <Small >Você será brevemente redirecionado ao nosso parceiro especialista de autenticação Auth0.<br /> Nos vemos na volta.</Small>
       </Text>

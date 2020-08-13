@@ -1,7 +1,6 @@
 import Head from "next/head"
 import Header from "./header"
 import { useState } from "react"
-import { useFetchUser } from "../lib/user"
 import ProductList from "../components/productList"
 import Paginator from "../components/paginator"
 import Totalizer from "../components/totalizer"
@@ -21,26 +20,22 @@ import {
 } from "evergreen-ui"
 import SpinnerBox from "./spinnerBox"
 import SearchBox from "./searchBox"
+import { signIn, signOut, useSession } from "next-auth/client"
 
 const S = require("sanctuary")
 const $ = require ("sanctuary-def")
 
 const Layout = ({ products, cart: apiCart, sources, children, inIndex, inCart, inSearch, searchQuery, pageDescription, msg }) => {
   const [cart, setCart] = useState(apiCart)
-  const { user, loading } = useFetchUser()
+  const [session, loading] = useSession()
   const [ message, setMessage ] = useState(msg)
   const router = useRouter()
-  
-  const mbUser = S.get (S.is ($.String)) ("sub") (user)
-  
-  const isAuthenticated = S.maybeToNullable (mbUser) !== null
-  
-  const hideHeader = !isAuthenticated
-  
+  const mbUser = S.get (S.is ($.Object)) ("user") (session)
+  const isAuthenticated = S.isJust (mbUser)
+  const user = S.fromMaybe ({}) (mbUser)
   const indexedSources = indexById(sources)
-  
   const total = S.get(S.is($.FiniteNumber))("total")(cart)
-  
+
   const cartItemsCount = S.pipe([
     S.prop("items"),
     S.values,
@@ -76,7 +71,7 @@ const Layout = ({ products, cart: apiCart, sources, children, inIndex, inCart, i
   
   const boundClearCart = clearCart.bind()
   
-  const userId = S.maybeToNullable(S.get(S.is($.String))("sub")(user))
+  const userId = S.maybeToNullable(S.get(S.is($.String))("email")(user))
   
   const updateQuantityAndSetState = (productId, variantId, delta, subtotal) => {
     // calculate locally too
@@ -112,7 +107,7 @@ const Layout = ({ products, cart: apiCart, sources, children, inIndex, inCart, i
               <ProductList updateProductQuantityBy={boundUpdateQuantity} products={products} sources={indexedSources} />
               
               <Totalizer inCart={inCart} total={S.fromMaybe("R$ 0")(S.map(currency.format)(total))} count={cartItemsCount} clearCart={boundClearCart} promoteCartToPurchase={boundPromoteCartToPurchase} />
-              {!hideHeader && <Header user={user} loading={loading} />}
+              <Header user={user} loading={loading} />
             </CartContext.Provider>)
         }
         
