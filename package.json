@@ -10,6 +10,7 @@
   "dependencies": {
     "@auth0/auth0-react": "auth0/auth0-react",
     "@auth0/nextjs-auth0": "^0.6.0",
+    "@sendgrid/mail": "^7.2.3",
     "bson": "^4.1.0",
     "btoa": "^1.2.1",
     "dotenv": "^8.2.0",
