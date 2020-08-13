@@ -3,10 +3,14 @@ import Link from "next/link"
 import { useState } from "react"
 import { brand, palette } from "../theme"
 
+const S = require ("sanctuary")
+
 const SearchBox = () => {
   const [ query, setQuery ] = useState ("")
 
   const quote = q => (`\"${q}\"`)
+
+  const lightPrimary = S.prop("base")(palette)
 
   return (
     <Card display="flex" elevation={1} margin={majorScale(2)} padding={majorScale(1)} alignItems="center" justifyContent="flex-start" background={ brand }>
@@ -19,10 +23,7 @@ const SearchBox = () => {
         <SearchInput placeholder="Buscar produto" width="100%" onChange={e => setQuery (e.target.value) } />
       </Pane>
       <Pane marginLeft={majorScale(2)}>
-        <Link href={{ pathname: "/search", query: { keyword: quote(query) } }}><Button iconAfter={SearchIcon}>Buscar</Button></Link>
-        {/* <Link href={`/search/?query=${quote (query)}`}>
-          <Button iconAfter={SearchIcon}>Buscar</Button>
-        </Link> */}
+        <Link href={{ pathname: "/search", query: { keyword: quote(query) } }}><Button style={{ background: `${lightPrimary}`, color: "white"}} iconAfter={SearchIcon}>Buscar</Button></Link>
       </Pane>
     </Card>
   )

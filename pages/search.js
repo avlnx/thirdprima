@@ -1,5 +1,5 @@
 // import { useState } from "react"
-import Layout from '../components/layout'
+import Layout from "../components/layout"
 // import { useRouter } from 'next/router'
 // import { useFetchUser } from '../../lib/user'
 import {
@@ -39,16 +39,12 @@ function Search({ products, sources, cart: apiCart, query, error }) {
 export default Search
 
 export async function getServerSideProps({ query }) {
-  debugger
-  // const router = useRouter()
-  // console.log(router.query);
   const searchQuery = S.fromMaybe("") (S.value ("keyword") (query))
   const db = await connect()
-  const collection = await db.collection('products')
-  const q = { $text: { $search: query } }
+  const collection = await db.collection("products")
   const products = parseJsonFromListOfObjects (JSON.stringify(await collection.find({ $text: { $search: searchQuery } }).toArray()))
+  
   const sources = parseJsonFromListOfObjects(await getSources(db))
-  //oko
   const cart = parseJsonFromObject(await getCart(db))
   if (S.unchecked.any(S.isNothing)([sources, cart, products]))
     return { props: { error: true } }
