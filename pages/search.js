@@ -1,7 +1,4 @@
-// import { useState } from "react"
 import Layout from "../components/layout"
-// import { useRouter } from 'next/router'
-// import { useFetchUser } from '../../lib/user'
 import {
   Alert,
   ArrowLeftIcon,
@@ -10,20 +7,18 @@ import {
   Pane,
   Spinner,
 } from "evergreen-ui"
-// import BlockSwitch from "../../components/switch"
-// import ProductList from "../../components/productList"
-// import Paginator from "../../components/paginator"
-// import Totalizer from "../../components/totalizer"
-// import LoginBox from "../../components/loginBox"
-// import SpinnerBox from "../../components/spinnerBox"
+import LoginBox from "../../components/loginBox"
 import ErrorResponse from "../components/errorResponse"
 import connect from "../lib/db"
 import { parseJsonFromListOfObjects, parseJsonFromObject, getSources, getCart } from "../lib/prima"
+import { useSession } from "next-auth/client"
 
 const S = require("sanctuary")
 const $ = require("sanctuary-def")
 
 function Search({ products, sources, cart: apiCart, query, error }) {
+  const [session, loading] = useSession()
+  if (!session) return <LoginBox />
 
   if (error) return <ErrorResponse />
 

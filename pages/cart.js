@@ -3,13 +3,16 @@ import ErrorResponse from "../components/errorResponse"
 import { getSources, getFullCart, parseJsonFromObject, parseJsonFromListOfObjects } from "../lib/prima"
 import connect from "../lib/db"
 import { Alert, majorScale, minorScale, Pane, ShoppingCartIcon, Text } from "evergreen-ui"
+import { useSession } from "next-auth/client"
+import LoginBox from "../components/loginBox"
 
 const S = require ("sanctuary")
 
 function Cart({ sources, cart: apiCart, error }) {
+  const [session, loading ] = useSession()
+  if (!session) return <LoginBox />
 
   if (error) return <ErrorResponse />
-
   const pageDescription = <Alert
     intent="none"
     title={"Este é seu carrinho"}

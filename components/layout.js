@@ -31,7 +31,6 @@ const Layout = ({ products, cart: apiCart, sources, children, inIndex, inCart, i
   const [ message, setMessage ] = useState(msg)
   const router = useRouter()
   const mbUser = S.get (S.is ($.Object)) ("user") (session)
-  const isAuthenticated = S.isJust (mbUser)
   const user = S.fromMaybe ({}) (mbUser)
   const indexedSources = indexById(sources)
   const total = S.get(S.is($.FiniteNumber))("total")(cart)
@@ -95,8 +94,8 @@ const Layout = ({ products, cart: apiCart, sources, children, inIndex, inCart, i
         
         {loading 
           ? <SpinnerBox />
-          : (!isAuthenticated && <LoginBox />) 
-          || (isAuthenticated && 
+          : (!session && <LoginBox />) 
+          || (session && 
             <CartContext.Provider value={cart}>
               <SearchBox />
               
@@ -110,15 +109,7 @@ const Layout = ({ products, cart: apiCart, sources, children, inIndex, inCart, i
               <Header user={user} loading={loading} />
             </CartContext.Provider>)
         }
-        
-        
       </Pane>
-
-      
-      {/* <main>
-        <div className="container">{children}</div>
-      </main> */}
-
       <style jsx>{`
         .container {
           max-width: 42rem;
