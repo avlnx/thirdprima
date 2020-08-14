@@ -21,7 +21,7 @@ const userInitialCart = owner => {
 const notifyPurchase = async cart => {
   const msg = makePurchaseNotificationData(cart)
   console.log("BASE_URL", `${server}/api/products`)
-  const emailResponse = await fetch(`${server}/api/products`, {
+  const emailResponse = await fetch(`${server}/api/email`, {
     method: "post",
     body: JSON.stringify(msg)
   })
