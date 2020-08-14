@@ -1,5 +1,6 @@
 import connect from "../../lib/db"
 import { initialCart, CARTSTATUS } from "../../lib/prima"
+import { server } from "../../config"
 
 const S = require("sanctuary")
 const $ = require("sanctuary-def")
@@ -19,7 +20,8 @@ const userInitialCart = owner => {
 
 const notifyPurchase = async cart => {
   const msg = makePurchaseNotificationData(cart)
-  const emailResponse = await fetch(`${process.env.BASE_URL}/api/email`, {
+  console.log("BASE_URL", `${server}/api/products`)
+  const emailResponse = await fetch(`${server}/api/products`, {
     method: "post",
     body: JSON.stringify(msg)
   })
