@@ -6,14 +6,16 @@ import ErrorResponse from "../components/errorResponse"
 import { useSession } from "next-auth/client"
 import LoginBox from "../components/loginBox"
 import SpinnerBox from "../components/spinnerBox"
+import { useRouter } from "next/router"
 
 const S = require ("sanctuary")
 const $ = require ("sanctuary-def")
 
 const Home = ({ products, sources, cart: apiCart, error, msg }) => {
   const [session, loading] = useSession()
+  const router = useRouter()
   if (loading) return <SpinnerBox />
-  if (!loading && !session) return <LoginBox />
+  if (!loading && !session) router.push("/auth/login")
   if (error) return <ErrorResponse />
 
   const pageDescription = <Alert

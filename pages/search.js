@@ -13,12 +13,15 @@ import ErrorResponse from "../components/errorResponse"
 import connect from "../lib/db"
 import { parseJsonFromListOfObjects, parseJsonFromObject, getSources, getCart } from "../lib/prima"
 import { useSession } from "next-auth/client"
+import { useRouter } from "next/router"
 
 const S = require("sanctuary")
 const $ = require("sanctuary-def")
 
 function Search({ products, sources, cart: apiCart, query, error }) {
   const [session, loading] = useSession()
+  const router = useRouter()
+  if (!loading && !session) router.push("/auth/login")
   if (loading) return <SpinnerBox />
   if (!loading && !session) return <LoginBox />
   if (error) return <ErrorResponse />

@@ -6,13 +6,15 @@ import { Alert, majorScale, minorScale, Pane, ShoppingCartIcon, Text } from "eve
 import { useSession } from "next-auth/client"
 import LoginBox from "../components/loginBox"
 import SpinnerBox from "../components/spinnerBox"
+import { useRouter } from "next/router"
 
 const S = require ("sanctuary")
 
 function Cart({ sources, cart: apiCart, error }) {
   const [session, loading ] = useSession()
+  const router = useRouter()
+  if (!loading && !session) router.push("/auth/login")
   if (loading) return <SpinnerBox />
-  if (!loading && !session) return <LoginBox />
   if (error) return <ErrorResponse />
 
   const pageDescription = <Alert
