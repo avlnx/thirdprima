@@ -47,20 +47,23 @@ export default async (req, res) => {
         if (S.prop ("insertedCount") (result) === 1) {
           // success, insert seed cart to reset and send message
           const result2 = await carts.insertOne(userInitialCart(S.prop ("owner") (cart)))
-          // notify purchase
-          const emailResponse = await notifyPurchase (cart)
-          if (S.prop("insertedCount")(result2) === 1 && emailResponse.status === 200) {
+          // notify purchase but don't wait for promisse
+          notifyPurchase (cart)
+          if (S.prop("insertedCount")(result2) === 1) {
             return res.status(200).json({ success: "Tudo certo. Obrigada pela sua compra. Vamos preparar seu pedido e entraremos em contato em breve." })
           } else {
             // TODO: actually notify me
             return res.status(500).json({ error: "Ocorreu algum problema confirmando seu pedido. Por favor tente novamente mais tarde, nossos engenheiros já foram notificados do problema." })
           }
         }
+        return res.status(500).json({ error: "Ocorreu algum problema confirmando seu pedido. Por favor tente novamente mais tarde, nossos engenheiros já foram notificados do problema." })
       } 
       // regular cart
       const result = await carts.insertOne(cart)
       if (S.prop ("insertedCount") (result) === 1) {
         return res.status(200).json({ cart })
+      } else {
+        return res.status(500).json({ error: "Ocorreu algum problema confirmando seu pedido. Por favor tente novamente mais tarde, nossos engenheiros já foram notificados do problema." })
       }
     }
 

@@ -61,7 +61,7 @@ const Layout = ({ products, cart: apiCart, sources, children, inIndex, inCart, i
   }
 
   const promoteCartToPurchase = async () => {
-    const nextCart = S.unchecked.remove ("_id") ({ ...apiCart, status: CARTSTATUS.purchasePending, user: user })
+    const nextCart = S.unchecked.remove("products") (S.unchecked.remove ("_id") ({ ...apiCart, status: CARTSTATUS.purchasePending, user: user }))
     const result = await postNextCartState(nextCart)
     const msg = S.maybeToEither (result => S.prop ("error") (result)) (S.value ("success") (result))
     S.either (flashMsg) (goToIndex) (msg)

@@ -5,6 +5,7 @@ import connect from "../lib/db"
 import { Alert, majorScale, minorScale, Pane, ShoppingCartIcon, Text } from "evergreen-ui"
 import { useSession } from "next-auth/client"
 import LoginBox from "../components/loginBox"
+import SpinnerBox from "../components/spinnerBox"
 
 const S = require ("sanctuary")
 
@@ -13,7 +14,7 @@ function Cart({ sources, cart: apiCart, error }) {
   if (loading) return <SpinnerBox />
   if (!loading && !session) return <LoginBox />
   if (error) return <ErrorResponse />
-  
+
   const pageDescription = <Alert
     intent="none"
     title={"Este é seu carrinho"}
