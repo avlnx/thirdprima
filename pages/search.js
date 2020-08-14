@@ -7,7 +7,7 @@ import {
   Pane,
   Spinner,
 } from "evergreen-ui"
-import LoginBox from "../../components/loginBox"
+import LoginBox from "../components/loginBox"
 import ErrorResponse from "../components/errorResponse"
 import connect from "../lib/db"
 import { parseJsonFromListOfObjects, parseJsonFromObject, getSources, getCart } from "../lib/prima"
