@@ -10,9 +10,10 @@ const S = require ("sanctuary")
 
 function Cart({ sources, cart: apiCart, error }) {
   const [session, loading ] = useSession()
-  if (!session) return <LoginBox />
-
+  if (loading) return <SpinnerBox />
+  if (!loading && !session) return <LoginBox />
   if (error) return <ErrorResponse />
+  
   const pageDescription = <Alert
     intent="none"
     title={"Este é seu carrinho"}

@@ -5,14 +5,15 @@ import { Alert, majorScale, Pane } from "evergreen-ui"
 import ErrorResponse from "../components/errorResponse"
 import { useSession } from "next-auth/client"
 import LoginBox from "../components/loginBox"
+import SpinnerBox from "../components/spinnerBox"
 
 const S = require ("sanctuary")
 const $ = require ("sanctuary-def")
 
 const Home = ({ products, sources, cart: apiCart, error, msg }) => {
   const [session, loading] = useSession()
-  if (!session) return <LoginBox />
-
+  if (loading) return <SpinnerBox />
+  if (!loading && !session) return <LoginBox />
   if (error) return <ErrorResponse />
 
   const pageDescription = <Alert

@@ -3,8 +3,8 @@ import { brand } from "../theme"
 
 const SpinnerBox = ({ backgroundColor }) => {
   return (
-    <Pane background={backgroundColor || brand} display="flex" flex="1" alignItems="center" justifyContent="center" >
-      <Spinner size={128} />
+    <Pane height="100vh" background={backgroundColor || brand} display="flex" flex="1" alignItems="center" justifyContent="center" >
+      <Spinner size={64} />
     </Pane>
   )
 }
