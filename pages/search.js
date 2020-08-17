@@ -12,7 +12,7 @@ import SpinnerBox from "../components/spinnerBox"
 import ErrorResponse from "../components/errorResponse"
 import connect from "../lib/db"
 import { parseJsonFromListOfObjects, parseJsonFromObject, getSources, getCart } from "../lib/prima"
-import { useSession } from "next-auth/client"
+import { useSession, getSession } from "next-auth/client"
 import { useRouter } from "next/router"
 
 const S = require("sanctuary")
@@ -37,14 +37,17 @@ function Search({ products, sources, cart: apiCart, query, error }) {
 
 export default Search
 
-export async function getServerSideProps({ query }) {
+export async function getServerSideProps(context) {
+  const { query } = context
+  const session = await getSession(context)
+  const user = S.unchecked.value("user")(session)
   const searchQuery = S.fromMaybe("") (S.value ("keyword") (query))
   const db = await connect()
   const collection = await db.collection("products")
   const products = parseJsonFromListOfObjects (JSON.stringify(await collection.find({ $text: { $search: searchQuery } }).toArray()))
   
   const sources = parseJsonFromListOfObjects(await getSources(db))
-  const cart = parseJsonFromObject(await getCart(db))
+  const cart = parseJsonFromObject(await getCart(db, S.fromMaybe({})(user)))
   if (S.unchecked.any(S.isNothing)([sources, cart, products]))
     return { props: { error: true } }
 

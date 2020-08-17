@@ -3,13 +3,14 @@ import { getProducts, getSources, getCart, parseJsonFromListOfObjects, parseJson
 import connect from "../lib/db"
 import { Alert, majorScale, Pane } from "evergreen-ui"
 import ErrorResponse from "../components/errorResponse"
-import { useSession } from "next-auth/client"
+import { useSession, getSession } from "next-auth/client"
 import LoginBox from "../components/loginBox"
 import SpinnerBox from "../components/spinnerBox"
 import { useRouter } from "next/router"
 import { useState } from "react"
 
 const S = require ("sanctuary")
+const $ = require ("sanctuary-def")
 
 const Home = ({ products, sources, cart: apiCart, error, msg }) => {
   const [session, loading] = useSession()
@@ -33,11 +34,16 @@ const Home = ({ products, sources, cart: apiCart, error, msg }) => {
 
 export default Home
 
-export async function getServerSideProps({ req, res, query }) {
+export async function getServerSideProps(context) {
+  const { query } = context
+  const session = await getSession(context)
+  const user = S.unchecked.get(S.is($.Object))("user")(session)
+  // no user, return
+  if (S.isNothing(user)) return { props: { error: true } }
   const db = await connect()
   const products = parseJsonFromListOfObjects (await getProducts(db))
   const sources = parseJsonFromListOfObjects (await getSources(db))
-  const cart = parseJsonFromObject (await getCart(db))
+  const cart = parseJsonFromObject (await getCart(db, session.user))
 
   if (S.unchecked.any(S.isNothing) ([products, sources, cart]))
     return { props: { error: true}}

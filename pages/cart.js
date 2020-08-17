@@ -7,6 +7,7 @@ import { useSession } from "next-auth/client"
 import LoginBox from "../components/loginBox"
 import SpinnerBox from "../components/spinnerBox"
 import { useRouter } from "next/router"
+import { getSession } from "next-auth/client"
 
 const S = require ("sanctuary")
 
@@ -32,8 +33,9 @@ export default Cart
 
 export async function getServerSideProps(context) {
   const db = await connect()
+  const session = await getSession(context)
   const sources = parseJsonFromListOfObjects (await getSources(db))
-  const cart = parseJsonFromObject (await getFullCart(db))
+  const cart = parseJsonFromObject (await getFullCart(db, S.prop("user") (session)))
 
   if (S.unchecked.any(S.isNothing)([sources, cart]))
     return { props: { error: true } }
