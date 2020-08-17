@@ -13,12 +13,12 @@ import {
   Pane,
   Popover,
   Table,
-} from 'evergreen-ui'
+} from "evergreen-ui"
 import Variant from "./variant"
 import ActionButtons from "./actionButtons"
 import "isomorphic-unfetch"
 
-import { arrayOfObjects, id, indexById, stringProp, getCartQuantity, CartContext } from "../lib/prima"
+import { arrayOfObjects, id, indexById, stringProp, getCartQuantity, CartContext, findByIdInList } from "../lib/prima"
 
 const S = require("sanctuary")
 const $ = require("sanctuary-def")
@@ -30,7 +30,24 @@ const ProductRow = ({ product, viewingCart, updateProductQuantityBy, sources }) 
   const productId = stringProp("_id")(product)
 
   const variants = S.get(arrayOfObjects)("variants")(product)
-  const flatVariants = S.maybeToNullable(variants)
+  const isValidVariant = variant => {
+    // debugger
+    const sourceId = S.get(S.is($.String))("source")(variant)
+    const productId = S.get(S.is($.String))("product")(variant)
+    const variantId = S.get(S.is($.String))("_id")(variant)
+    const packLabel = S.get(S.is($.String))("pack_label")(variant)
+    const packUnit = S.get(S.is($.String))("pack_unit")(variant)
+    // TODO: pick price based on user preference (simples, deferred)
+    const price = S.get(S.is($.NonZeroValidNumber))("price")(variant)
+    // const { source, product, _id, pack_label, pack_unit, price } = variant
+    const source = findByIdInList(S.fromMaybe("")(sourceId))(sources)
+    const data = [sourceId, productId, variantId, packLabel, packUnit, price, source]
+
+    const result = S.unchecked.all(S.isJust)(data)
+    return result
+  }
+  const validVariants = S.unchecked.filter(isValidVariant)(S.fromMaybe([]) (variants))
+  // const flatVariants = S.maybeToNullable(variants)
 
   const label = stringProp("label")(product)
 
@@ -83,7 +100,7 @@ const ProductRow = ({ product, viewingCart, updateProductQuantityBy, sources }) 
                       setSelectedVariantId(id(v))
                     }}>
                       <Variant variant={v} sources={sources} />
-                    </Table.Row>)(flatVariants)}
+                    </Table.Row>)(validVariants)}
                   </Table.Body>
                 </Table>)}>
                 <Button iconAfter={CaretDownIcon}>
@@ -99,8 +116,8 @@ const ProductRow = ({ product, viewingCart, updateProductQuantityBy, sources }) 
               display="flex"
               alignItems="center"
               justifyContent="space-between">
-              <Button flex={"1"} appearance="minimal" onClick={() => updateProductQuantityBy(productIdValue, selectedVariantId, -getCartQuantity(cart)(productIdValue)(selectedVariantId),selected.price * selected.pack_size * -getCartQuantity(cart)(productIdValue)(selectedVariantId))}
-            intent="danger">remover</Button>
+              <Button flex={"1"} appearance="minimal" onClick={() => updateProductQuantityBy(productIdValue, selectedVariantId, -getCartQuantity(cart)(productIdValue)(selectedVariantId), selected.price * selected.pack_size * -getCartQuantity(cart)(productIdValue)(selectedVariantId))}
+                intent="danger">remover</Button>
               <IconButton flex={"1"} onClick={() => updateProductQuantityBy(productIdValue, selectedVariantId, -1, selected.price * selected.pack_size * -1)} icon={MinusIcon} disabled={getCartQuantity(cart)(productIdValue)(selectedVariantId) === 0} />
               <IconButton flex={"1"} onClick={() => updateProductQuantityBy(productIdValue, selectedVariantId, 1, selected.price * selected.pack_size * 1)} icon={PlusIcon} />
             </Pane>
