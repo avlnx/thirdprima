@@ -6,7 +6,8 @@ import { brand, palette } from "../theme"
 const S = require("sanctuary")
 
 const SearchBox = () => {
-  const [query, setQuery] = useState("")
+  const [ query, setQuery ] = useState("")
+  const [ searching, setSearching ] = useState(false)
 
   const quote = q => (`\"${q}\"`)
 
@@ -21,12 +22,12 @@ const SearchBox = () => {
       </Pane>
       <Pane flex="1" display="flex" justifyContent="flex-end">
         <form>
-          <SearchInput placeholder="Buscar produto" onChange={e => setQuery(e.target.value)} flex="1" />
-          <Link  href={{ pathname: "/search", query: { keyword: quote(query) } }}><Button marginLeft={ majorScale(1) } style={{ background: `${lightPrimary}`, color: "white" }} iconAfter={SearchIcon}>Buscar</Button></Link>
+          <Pane display="flex"  >
+            <SearchInput placeholder="Buscar produto" onChange={e => setQuery(e.target.value)} width="auto" />
+            <Link  href={{ pathname: "/search", query: { keyword: quote(query) } }}><Button isLoading={searching} onClick={() => setSearching(true)} marginLeft={ majorScale(1) } style={{ background: `${lightPrimary}`, color: "white" }} iconAfter={SearchIcon}>Buscar</Button></Link>
+          </Pane>
         </form>
       </Pane>
-      {/* <Pane marginLeft={majorScale(2)}> */}
-      {/* </Pane> */}
     </Card>
   )
 }

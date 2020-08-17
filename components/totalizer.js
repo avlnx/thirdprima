@@ -15,8 +15,15 @@ import {
 import Link from "next/link"
 import { primaTheme } from "../theme"
 const S = require("sanctuary")
+import { useState } from "react"
 
 const Totalizer = ({ inCart, total, loading, count, clearCart, promoteCartToPurchase }) => {
+  const [buttonLoading, setButtonLoading ] = useState(false)
+  const [ finalButtonLoading, setFinalButtonLoading ] = useState(false)
+  const kickOff = async () => {
+    setFinalButtonLoading (true)
+    promoteCartToPurchase()
+  }
   return (
     <Card elevation={1} margin={majorScale(2)} padding={majorScale(2)} display="flex" alignItems="center" justifyContent="space-between" background={"white"}>
       {loading ? <Spinner /> : null}
@@ -32,10 +39,10 @@ const Totalizer = ({ inCart, total, loading, count, clearCart, promoteCartToPurc
         {/* <Button appearance="minimal" onClick={() => clearCart()} intent="danger">Limpar</Button> */}
         <Pill style={{ position: "relative", bottom: "25px", left: "5px", zIndex: "10"}} display="inline-block" color="red" isSolid marginRight={-minorScale(1)}  >{count}</Pill>
         {inCart ?
-          <Button height={48} appearance="primary" style={{ background: S.props(["colors", "intent", "success"])(primaTheme) }} onClick={() => promoteCartToPurchase() } iconAfter={ArrowRightIcon}>Finalizar pedido</Button>
+          <Button height={48} isLoading={finalButtonLoading} appearance="primary" style={{ background: S.props(["colors", "intent", "success"])(primaTheme) }} onClick={() => kickOff() } iconAfter={ArrowRightIcon}>Finalizar pedido</Button>
           :
           <Link href="/cart" >
-            <Button height={48} appearance="primary" style={S.prop("primaryButton")(primaTheme)} iconAfter={ShoppingCartIcon}>Carrinho</Button>
+            <Button height={48} isLoading={buttonLoading} appearance="primary" onClick={() => setButtonLoading (true) } style={S.prop("primaryButton")(primaTheme)} iconAfter={ShoppingCartIcon}>Carrinho</Button>
           </Link>}
         <Link href="/" >
           <Button appearance="minimal" intent="danger">Voltar</Button>

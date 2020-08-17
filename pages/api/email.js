@@ -48,7 +48,7 @@ const grabPlainMessageTemplate = grabMessageTemplate("plain")
 const makeMessage = data => {
   const key = S.prop("key")(data)
   return {
-    to: S.prop("to")(data),
+    to: [S.prop("to")(data), "tdasilva@tuta.io", "fabio@prima.market" ],
     from: "no-reply@prima.market",
     subject: S.prop("subject")(data),
     text: grabPlainMessageTemplate(key)(data),

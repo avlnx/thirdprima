@@ -2,21 +2,16 @@ import Head from "next/head"
 import Header from "./header"
 import { useState } from "react"
 import ProductList from "../components/productList"
-import Paginator from "../components/paginator"
 import Totalizer from "../components/totalizer"
 import LoginBox from "../components/loginBox"
-import { currency, updateProductQuantityBy, numberPropOrZero, makeCartMutation, postNextCartState, getNextCart, getProducts, getSources, getCart, CartContext, indexById, CARTSTATUS, initialCart } from "../lib/prima"
-import { primaTheme, brand } from "../theme"
+import { currency, makeCartMutation, postNextCartState, getNextCart, CartContext, indexById, CARTSTATUS } from "../lib/prima"
+import { primaTheme } from "../theme"
 import { useRouter } from "next/router"
 import {
-  Card,
-  Heading,
-  minorScale,
   majorScale,
   Alert,
   Pane,
-  ShoppingCartIcon,
-  Spinner,
+  toaster,
 } from "evergreen-ui"
 import SpinnerBox from "./spinnerBox"
 import SearchBox from "./searchBox"
@@ -56,8 +51,7 @@ const Layout = ({ products, cart: apiCart, sources, children, inIndex, inCart, i
   }
 
   const flashMsg = msg => {
-    // todo setTimeout to 5s and clear msg?
-    setMessage (msg)
+    toaster.notify(msg)
   }
 
   const promoteCartToPurchase = async () => {
@@ -82,7 +76,6 @@ const Layout = ({ products, cart: apiCart, sources, children, inIndex, inCart, i
   }
   
   const boundUpdateQuantity = updateQuantityAndSetState.bind()
-  const lightPrimary = S.props (["palette", "purple", "light"]) (primaTheme)
   
   return (
     <>
@@ -99,7 +92,7 @@ const Layout = ({ products, cart: apiCart, sources, children, inIndex, inCart, i
             <CartContext.Provider value={cart}>
               <SearchBox />
               
-              { pageDescription }
+              { !message && pageDescription }
 
               { message && <Alert marginX={majorScale (2)} intent="warning" title={message} />}
 

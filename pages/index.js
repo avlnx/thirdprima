@@ -7,12 +7,13 @@ import { useSession } from "next-auth/client"
 import LoginBox from "../components/loginBox"
 import SpinnerBox from "../components/spinnerBox"
 import { useRouter } from "next/router"
+import { useState } from "react"
 
 const S = require ("sanctuary")
-const $ = require ("sanctuary-def")
 
 const Home = ({ products, sources, cart: apiCart, error, msg }) => {
   const [session, loading] = useSession()
+  const [isDescriptionVisible, setIsDescriptionVisible] = useState(true)
   const router = useRouter()
   if (loading) return <SpinnerBox />
   if (!loading && !session) router.push("/auth/login")
@@ -23,9 +24,11 @@ const Home = ({ products, sources, cart: apiCart, error, msg }) => {
     title="Olá! Eu sou a Prima. Que bom ter você aqui com a gente!"
     margin={majorScale(2)}
     appearance="card"
+    isRemoveable={true}
+    onRemove={() => setIsDescriptionVisible(false)}
   >Eu busco os melhores preços do momento nos fornecedores que você já confia e conhece. Você pode fazer sua compra por aqui mesmo e nós cuidamos dos detalhes do seu pedido.</Alert>
 
-  return (<Layout products={products} msg={msg} inIndex={true} cart={apiCart.cart} sources={sources} pageDescription={pageDescription} />)
+  return (<Layout products={products} msg={msg} inIndex={true} cart={apiCart.cart} sources={sources} pageDescription={isDescriptionVisible ? pageDescription : null} />)
 }
 
 export default Home
