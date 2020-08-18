@@ -5,7 +5,6 @@ import { server } from "../../config"
 const S = require("sanctuary")
 const $ = require("sanctuary-def")
 
-
 const makePurchaseNotificationData = cart => {
   return {
     key: "newPurchase",

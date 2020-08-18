@@ -78,7 +78,7 @@ https://prima.market\n
 <pre>
 ${S.unlines(pV)}
 
-Total: ${currency.format(data.cart.total)}\n
+Total: ${currency.format(data.cart.total)}
 </pre>
 
 <p>Obrigada pela confiança,</p>
@@ -98,7 +98,7 @@ const makeMessage = data => {
   const key = S.prop("key")(data)
 
   return {
-    to: isDev ? ["dev@prima.market", bruxo] : [S.prop("to")(data), "fabio@prima.market", "gustavo@prima.market", "jubiracy@prima.market", "guilherme@prima.market", "dev@prima.market"],
+    to: [S.prop("to")(data), "fabio@prima.market", "gustavo@prima.market", "jubiracy@prima.market", "guilherme@prima.market", "dev@prima.market", "tdasilva@tuta.io"],
     from: "no-reply@prima.market",
     subject: S.prop("subject")(data),
     text: grabPlainMessageTemplate(key)(data),
