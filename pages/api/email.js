@@ -98,7 +98,7 @@ const makeMessage = data => {
   const key = S.prop("key")(data)
 
   return {
-    to: [S.prop("to")(data), "fabio@prima.market", "gustavo@prima.market", "jubiracy@prima.market", "guilherme@prima.market", "dev@prima.market", "tdasilva@tuta.io"],
+    to: isDev ? bruxo : [S.prop("to")(data), "fabio@prima.market", "gustavo@prima.market", "jubiracy@prima.market", "guilherme@prima.market", "dev@prima.market", "tdasilva@tuta.io"],
     from: "no-reply@prima.market",
     subject: S.prop("subject")(data),
     text: grabPlainMessageTemplate(key)(data),
@@ -117,8 +117,6 @@ export default async (req, res) => {
     const data = S.maybeToNullable(msgData)
 
     const message = makeMessage(data)
-
-    console.log("message", message)
 
     sgMail.send(message, true)
 
