@@ -1,9 +1,10 @@
 import connect from "../../lib/db"
-import { initialCart, CARTSTATUS } from "../../lib/prima"
+import { initialCart, CARTSTATUS, grabCartsProducts, indexByObjectId, findByIdInList } from "../../lib/prima"
 import { server } from "../../config"
 
 const S = require("sanctuary")
 const $ = require("sanctuary-def")
+
 
 const makePurchaseNotificationData = cart => {
   return {
@@ -11,19 +12,38 @@ const makePurchaseNotificationData = cart => {
     to: S.props(["user", "email"])(cart),
     name: S.props(["user", "name"])(cart),
     subject: "Seu pedido foi recebido com sucesso.",
+    cart,
   }
 }
 
 const userInitialCart = owner => {
   return { ...initialCart, owner: owner}
-}
+} 
 
 const notifyPurchase = async cart => {
+  const db = await connect()
+  const productsCollection = await db.collection("products")
+  const products = await grabCartsProducts(cart, productsCollection)
+
+  const variants = S.chain (S.prop ("variants")) (products)
+  const sources = await db.collection("sources").find({}).toArray()
+
+  const variantsWithCartData = S.map(v => { 
+    
+    const quantity = S.fromMaybe(0) (S.gets (S.is ($.ValidNumber)) (["items", v.product.toString(), v._id.toString() ])(cart))
+
+    const source = S.head(S.filter (s => s._id.toString() === v.source.toString()) (sources))
+
+    const sourceLabel =   S.prop("label") (S.maybeToNullable(source))
+
+    return { ...v, quantity, sourceLabel} 
+  }) (variants)
+
   const msg = makePurchaseNotificationData(cart)
-  console.log("BASE_URL", `${server}/api/products`)
+  const msgWithProducts = {...msg, variantsWithCartData }
   const emailResponse = await fetch(`${server}/api/email`, {
     method: "post",
-    body: JSON.stringify(msg)
+    body: JSON.stringify(msgWithProducts)
   })
   return emailResponse
 }
