@@ -69,8 +69,11 @@ export default async (req, res) => {
           // success, insert seed cart to reset and send message
           const result2 = await carts.insertOne(userInitialCart(S.prop ("owner") (cart)))
           // notify purchase but don't wait for promisse
-          const emailResponse = await notifyPurchase (cart)
-          console.log("emailResponse", emailResponse)
+          try{
+            const emailResponse = await notifyPurchase (cart)
+          } catch (err) {
+            console.error(err)
+          }
           if (S.prop("insertedCount")(result2) === 1) {
             return res.status(200).json({ success: "Tudo certo. Obrigada pela sua compra. Vamos preparar seu pedido e entraremos em contato em breve." })
           } else {
