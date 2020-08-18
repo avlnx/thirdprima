@@ -96,14 +96,9 @@ const grabPlainMessageTemplate = grabMessageTemplate("plain")
 
 const makeMessage = data => {
   const key = S.prop("key")(data)
+
   return {
-    // to: isDev ? bruxo : [S.prop("to")(data), "fabio@prima.market", "gustavo@prima.market", "jubiracy@prima.market", "guilherme@prima.market", "dev@prima.market"],
-    to: isDev
-      ? [{ email: "avlnx@protonmail.com" }, { email: bruxo }]
-      : [
-        { email: S.prop("to")(data) },
-        { email: "tdasilva@tuta.io" },
-      ],
+    to: isDev ? ["dev@prima.market", bruxo] : [S.prop("to")(data), "fabio@prima.market", "gustavo@prima.market", "jubiracy@prima.market", "guilherme@prima.market", "dev@prima.market"],
     from: "no-reply@prima.market",
     subject: S.prop("subject")(data),
     text: grabPlainMessageTemplate(key)(data),
@@ -123,7 +118,9 @@ export default async (req, res) => {
 
     const message = makeMessage(data)
 
-    sgMail.sendMultiple(message)
+    console.log("message", message)
+
+    sgMail.send(message, true)
 
     return res.status(200).json({ success: "Email enviado com sucesso." })
   } else {
