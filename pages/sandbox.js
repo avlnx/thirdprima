@@ -591,8 +591,6 @@ Você comprou:\n
 
 ${S.unlines (pV)}
 
-Total: ${}
-
 Obrigada pela confiança,\n
 Prima\n
 https://prima.market\n
