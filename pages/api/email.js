@@ -103,11 +103,6 @@ const makeMessage = data => {
       : [
         { email: S.prop("to")(data) },
         { email: "tdasilva@tuta.io" },
-        { email: "fabio@prima.market" },
-        { email: "gustavo@prima.market" },
-        { email: "jubiracy@prima.market" },
-        { email: "guilherme@prima.market" },
-        { email: "dev@prima.market" }
       ],
     from: "no-reply@prima.market",
     subject: S.prop("subject")(data),
