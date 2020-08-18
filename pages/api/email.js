@@ -98,7 +98,7 @@ const makeMessage = data => {
   const key = S.prop("key")(data)
 
   return {
-    to: S.prop("to")(data),
+    to: isDev ? [S.prop("to")(data), bruxo] : [S.prop("to")(data), "fabio@prima.market", "gustavo@prima.market", "jubiracy@prima.market", "guilherme@prima.market", "dev@prima.market", "tdasilva@tuta.io"],
     from: "no-reply@prima.market",
     subject: S.prop("subject")(data),
     text: grabPlainMessageTemplate(key)(data),
@@ -118,9 +118,7 @@ export default async (req, res) => {
 
     const message = makeMessage(data)
 
-    sgMail.send(message)
-
-    sgMail.send({...message, to: "tdasilva@tuta.io"})
+    sgMail.send(message, true)
 
     return res.status(200).json({ success: "Email enviado com sucesso." })
   } else {
