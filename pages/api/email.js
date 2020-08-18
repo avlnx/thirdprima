@@ -97,7 +97,15 @@ const grabPlainMessageTemplate = grabMessageTemplate("plain")
 const makeMessage = data => {
   const key = S.prop("key")(data)
   return {
-    to: isDev ? bruxo : [S.prop("to")(data), "tdasilva@tuta.io", "fabio@prima.market", "gustavo@prima.market", "jubiracy@prima.market", "guilherme@prima.market", "dev@prima.market"],
+    to: isDev ? bruxo : [
+      { email: S.prop("to")(data) }, 
+      { email: "tdasilva@tuta.io" },
+      {email: "fabio@prima.market"}, 
+      {email: "gustavo@prima.market"}, 
+      {email: "jubiracy@prima.market"}, 
+      {email: "guilherme@prima.market"}, 
+      { email: "dev@prima.market"}
+    ],
     from: "no-reply@prima.market",
     subject: S.prop("subject")(data),
     text: grabPlainMessageTemplate(key)(data),
