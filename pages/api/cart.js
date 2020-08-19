@@ -1,6 +1,6 @@
 import connect from "../../lib/db"
-import { initialCart, CARTSTATUS, grabCartsProducts, indexByObjectId, findByIdInList } from "../../lib/prima"
-import { server } from "../../config"
+import { initialCart, CARTSTATUS, grabCartsProducts } from "../../lib/prima"
+import { makePurchaseEmail, sendEmail } from "../../lib/sendEmail"
 
 const S = require("sanctuary")
 const $ = require("sanctuary-def")
@@ -40,11 +40,10 @@ const notifyPurchase = async cart => {
 
   const msg = makePurchaseNotificationData(cart)
   const msgWithProducts = {...msg, variantsWithCartData }
-  const emailResponse = await fetch(`${server}/api/email`, {
-    method: "post",
-    body: JSON.stringify(msgWithProducts)
-  })
-  return emailResponse
+
+  const purchaseEmail = makePurchaseEmail(msgWithProducts)
+  const response = await sendEmail(purchaseEmail)
+  return response
 }
 
 export default async (req, res) => {
@@ -69,11 +68,7 @@ export default async (req, res) => {
           // success, insert seed cart to reset and send message
           const result2 = await carts.insertOne(userInitialCart(S.prop ("owner") (cart)))
           // notify purchase but don't wait for promisse
-          try{
-            const emailResponse = await notifyPurchase (cart)
-          } catch (err) {
-            console.error(err)
-          }
+          notifyPurchase (cart)
           if (S.prop("insertedCount")(result2) === 1) {
             return res.status(200).json({ success: "Tudo certo. Obrigada pela sua compra. Vamos preparar seu pedido e entraremos em contato em breve." })
           } else {
