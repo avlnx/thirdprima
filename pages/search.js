@@ -44,7 +44,7 @@ export async function getServerSideProps(context) {
   const searchQuery = S.fromMaybe("") (S.value ("keyword") (query))
   const db = await connect()
   const collection = await db.collection("products")
-  const products = parseJsonFromListOfObjects (JSON.stringify(await collection.find({ $text: { $search: searchQuery } }).toArray()))
+  const products = parseJsonFromListOfObjects(JSON.stringify(await collection.find({ $text: { $search: searchQuery }, "variants": { $not: { $size: 0 } }}).toArray()))
   
   const sources = parseJsonFromListOfObjects(await getSources(db))
   const cart = parseJsonFromObject(await getCart(db, S.fromMaybe({})(user)))
