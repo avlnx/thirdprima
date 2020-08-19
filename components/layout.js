@@ -58,7 +58,7 @@ const Layout = ({ products, cart: apiCart, sources, children, inIndex, inCart, i
     const nextCart = S.unchecked.remove("products") (S.unchecked.remove ("_id") ({ ...apiCart, status: CARTSTATUS.purchasePending, user: user }))
     const result = await postNextCartState(nextCart)
     console.log("promoteCartToPurchase, result after await postNextCartState", result)
-    const msg = `${result.status}: ${result.statusText}`
+    const msg = `${result.status}: ${result.statusText} ${result.text()}`
     goToIndex (msg)
   }
   const boundPromoteCartToPurchase = promoteCartToPurchase.bind()
