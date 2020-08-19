@@ -74,7 +74,7 @@ export default async (req, res) => {
             return res.status(200).json({ success: "Tudo certo. Obrigada pela sua compra. Vamos preparar seu pedido e entraremos em contato em breve." })
           } else {
             // TODO: actually notify me
-            return res.status(500).json({ error: "Ocorreu algum problema confirmando seu pedido. Por favor tente novamente mais tarde, nossos engenheiros já foram notificados do problema." + `${response.status}: ${response.statusText}` })
+            return res.status(500).json({ error: "Ocorreu algum problema confirmando seu pedido. Por favor tente novamente mais tarde, nossos engenheiros já foram notificados do problema." + `${response.status}: ${response.statusText} ${response.error}` })
           }
         }
         return res.status(500).json({ error: "Ocorreu algum problema confirmando seu pedido. Por favor tente novamente mais tarde, nossos engenheiros já foram notificados do problema." })
