@@ -53,8 +53,7 @@ const Layout = ({ products, cart: apiCart, sources, children, inIndex, inCart, i
   const promoteCartToPurchase = async () => {
     const nextCart = S.unchecked.remove("products") (S.unchecked.remove ("_id") ({ ...apiCart, status: CARTSTATUS.purchasePending, user: user }))
     const result = await postNextCartState(nextCart)
-    console.log("promoteCartToPurchase, result after await postNextCartState", result)
-    const msg = result.ok ? await result.json() : `${result.status}: ${result.statusText}`
+    const msg = result.ok ? S.prop("success") (await result.json()) : `${result.status}: ${result.statusText}`
     goToIndex (msg)
   }
   const boundPromoteCartToPurchase = promoteCartToPurchase.bind()
@@ -91,7 +90,7 @@ const Layout = ({ products, cart: apiCart, sources, children, inIndex, inCart, i
               
               { !message && pageDescription }
 
-              { message && <Alert marginX={majorScale (2)} intent="warning" title={message} />}
+              { message && <Alert marginX={majorScale (2)} intent={"none"} title={message} />}
 
               <ProductList updateProductQuantityBy={boundUpdateQuantity} products={products} sources={indexedSources} user={user} />
               
