@@ -50,15 +50,11 @@ const Layout = ({ products, cart: apiCart, sources, children, inIndex, inCart, i
     setCart(nextCart)
   }
 
-  const flashMsg = msg => {
-    toaster.notify(msg)
-  }
-
   const promoteCartToPurchase = async () => {
     const nextCart = S.unchecked.remove("products") (S.unchecked.remove ("_id") ({ ...apiCart, status: CARTSTATUS.purchasePending, user: user }))
     const result = await postNextCartState(nextCart)
     console.log("promoteCartToPurchase, result after await postNextCartState", result)
-    const msg = `${result.status}: ${result.statusText} ${result.text()}`
+    const msg = result.ok ? `${result.status}: ${result.statusText} ${result.text()}` : await result.json()
     goToIndex (msg)
   }
   const boundPromoteCartToPurchase = promoteCartToPurchase.bind()
