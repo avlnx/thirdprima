@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from "react"
+import React, { useState } from "react"
 import {
   Alert,
-  Badge,
   Button,
   CaretDownIcon,
   IconButton,
@@ -15,8 +14,6 @@ import {
   Table,
 } from "evergreen-ui"
 import Variant from "./variant"
-import ActionButtons from "./actionButtons"
-import "isomorphic-unfetch"
 
 import { arrayOfObjects, id, indexById, stringProp, getCartQuantity, CartContext, findByIdInList } from "../lib/prima"
 
@@ -24,11 +21,8 @@ const S = require("sanctuary")
 const $ = require("sanctuary-def")
 
 const ProductRow = ({ product, viewingCart, updateProductQuantityBy, sources }) => {
-
-  const [selectedVariantId, setSelectedVariantId] = useState("")
-
   const productId = stringProp("_id")(product)
-
+  
   const variants = S.get(arrayOfObjects)("variants")(product)
   const isValidVariant = variant => {
     // debugger
@@ -42,41 +36,39 @@ const ProductRow = ({ product, viewingCart, updateProductQuantityBy, sources }) 
     // const { source, product, _id, pack_label, pack_unit, price } = variant
     const source = findByIdInList(S.fromMaybe("")(sourceId))(sources)
     const data = [sourceId, productId, variantId, packLabel, packUnit, price, source]
-
+    
     const result = S.unchecked.all(S.isJust)(data)
     return result
   }
   const validVariants = S.unchecked.filter(isValidVariant)(S.fromMaybe([]) (variants))
-  // const flatVariants = S.maybeToNullable(variants)
 
+  const sortedVariants = S.sortBy (S.prop ("price")) (validVariants)
+  
   const label = stringProp("label")(product)
-
+  
   const data = [productId, variants, label]
-
+  
   const invalidRender = <Alert intent="warning" title="Este produto não está se comportando." />
   // bail if no variants
   if (S.unchecked.any(S.isNothing)(data)) return invalidRender
-
+  
   const productIdValue = S.maybeToNullable(productId)
-
-  const indexedVariants = indexById(S.maybeToNullable(variants))
-
+  
+  const indexedVariants = indexById(sortedVariants)
+  
   const mbFirstVariantsId = S.pipe([
-    S.chain(S.head),
+    S.head,
     S.chain(S.get(S.is($.String))("_id"))
-  ])(variants)
-
+  ])(sortedVariants)
+  
   const firstVariantsId = S.maybeToNullable(mbFirstVariantsId)
-
+  
   if (firstVariantsId === null) {
     console.log(`bailing because of variant ${S.show(firstVariantsId)} with maybe ${S.show(mbFirstVariantsId)}`)
     return <Alert intent="warning" title="Este produto não tem variações aparentemente :(" />
   }
-
-  useEffect(() => {
-    // runs once, pick the first variant as default
-    setSelectedVariantId(firstVariantsId)
-  }, [])
+  
+  const [selectedVariantId, setSelectedVariantId] = useState(firstVariantsId)
 
   const selected = S.maybeToNullable(S.get(_ => true)(selectedVariantId)(indexedVariants))
 
@@ -100,7 +92,7 @@ const ProductRow = ({ product, viewingCart, updateProductQuantityBy, sources }) 
                       setSelectedVariantId(id(v))
                     }}>
                       <Variant variant={v} sources={sources} />
-                    </Table.Row>)(validVariants)}
+                    </Table.Row>)(sortedVariants)}
                   </Table.Body>
                 </Table>)}>
                 <Button iconAfter={CaretDownIcon}>
