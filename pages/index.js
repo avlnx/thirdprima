@@ -6,7 +6,7 @@ import ErrorResponse from "../components/errorResponse"
 import { useSession, getSession } from "next-auth/client"
 import SpinnerBox from "../components/spinnerBox"
 import { useRouter } from "next/router"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
 const S = require ("sanctuary")
 const $ = require ("sanctuary-def")
@@ -15,8 +15,12 @@ const Home = ({ products, sources, cart: apiCart, error, msg }) => {
   const [session, loading] = useSession()
   const [isDescriptionVisible, setIsDescriptionVisible] = useState(true)
   const router = useRouter()
-  if (loading) return <SpinnerBox />
-  if (!loading && !session) router.push("/auth/login")
+
+  useEffect(() => {
+    if (!loading && !session) router.push("/auth/login")
+  }, [loading, session])
+  
+  if (loading) return <SpinnerBox message={"Construindo sua experiência customizada"} />
   if (error) return <ErrorResponse />
 
   const pageDescription = <Alert

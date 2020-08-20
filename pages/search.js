@@ -14,6 +14,7 @@ import connect from "../lib/db"
 import { parseJsonFromListOfObjects, parseJsonFromObject, getSources, getCart } from "../lib/prima"
 import { useSession, getSession } from "next-auth/client"
 import { useRouter } from "next/router"
+import { useEffect } from "react"
 
 const S = require("sanctuary")
 const $ = require("sanctuary-def")
@@ -21,8 +22,12 @@ const $ = require("sanctuary-def")
 function Search({ products, sources, cart: apiCart, query, error }) {
   const [session, loading] = useSession()
   const router = useRouter()
+
+  useEffect(() => {
+    if (!loading && !session) router.push("/auth/login")
+  }, [loading, session])
+
   if (loading) return <SpinnerBox />
-  if (!loading && !session) router.push("/auth/login")
   if (error) return <ErrorResponse />
   
   // if (!session) router.push("/auth/login")
