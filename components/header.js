@@ -17,7 +17,7 @@ function Header({ user, loading }) {
         {authenticated &&
           <>
             <Heading size={100} color={S.prop("base")(palette)}>Olá {S.fromMaybe("")(S.get(_ => true)("name")(user))}</Heading>
-            <Button appearance="minimal" onClick={signOut} style={{ color: "white", textDecoration: "underline"}} height={24}>
+            <Button appearance="minimal" onClick={() => signOut({ callbackUrl: "https://www.prima.market" })} style={{ color: "white", textDecoration: "underline"}} height={24}>
               Sair</Button>
           </>
         }
