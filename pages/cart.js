@@ -14,8 +14,8 @@ const S = require ("sanctuary")
 function Cart({ sources, cart: apiCart, error }) {
   const [session, loading ] = useSession()
   const router = useRouter()
-  if (!loading && !session) router.push("/auth/login")
   if (loading) return <SpinnerBox />
+  if (!loading && !session) router.push("/auth/login")
   if (error) return <ErrorResponse />
 
   const pageDescription = <Alert
@@ -26,7 +26,7 @@ function Cart({ sources, cart: apiCart, error }) {
   >
     Se estiver tudo certo é só clicar em 'Finalizar pedido' e nossa equipe entrará em ação.</Alert>
 
-  return (<Layout products={apiCart.cart.products} cart={apiCart.cart} sources={sources} inCart={true} pageDescription={pageDescription} />)
+  return (<Layout session={session} products={apiCart.cart.products} cart={apiCart.cart} sources={sources} inCart={true} pageDescription={pageDescription} />)
 }
 
 export default Cart

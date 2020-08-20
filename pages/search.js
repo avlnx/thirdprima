@@ -21,18 +21,20 @@ const $ = require("sanctuary-def")
 function Search({ products, sources, cart: apiCart, query, error }) {
   const [session, loading] = useSession()
   const router = useRouter()
-  if (!loading && !session) router.push("/auth/login")
   if (loading) return <SpinnerBox />
-  if (!loading && !session) return <LoginBox />
+  if (!loading && !session) router.push("/auth/login")
   if (error) return <ErrorResponse />
-
+  
+  // if (!session) router.push("/auth/login")
+  // if (!loading && !session) return <LoginBox />
+  
   const pageDescription = <Alert
     intent="none"
     title={`Buscando ${query.keyword}`}
     margin={majorScale(2)}
     appearance="card" />
 
-  return (<Layout products={products} cart={apiCart.cart} sources={sources} inSearch={true} pageDescription={pageDescription} />)
+  return (<Layout session={session} products={products} cart={apiCart.cart} sources={sources} inSearch={true} pageDescription={pageDescription} />)
 }
 
 export default Search
@@ -57,6 +59,7 @@ export async function getServerSideProps(context) {
       sources: S.maybeToNullable(sources),
       cart: S.maybeToNullable(cart),
       query: query,
+      session: session,
     }
   }
 }

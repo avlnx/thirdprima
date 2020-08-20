@@ -18,14 +18,16 @@ const Login = ({ ps, query }) => {
   // sessionless
   if (!loading) {
     if (authenticate) {
-      signIn(S.prop("id")(auth0))
+      signIn(S.prop("id")(auth0), { callbackUrl: process.env.BASE_URL})
       return null
     }
     window.location = MARKETING_URL
     return null
   }
 
-  return <SpinnerBox message="Redirecionando..." />
+  const msg = `Redirecionando para ${process.env.BASE_URL}`
+
+  return <SpinnerBox message={msg} />
 }
 
 export default Login

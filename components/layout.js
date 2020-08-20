@@ -20,9 +20,9 @@ import { signIn, signOut, useSession } from "next-auth/client"
 const S = require("sanctuary")
 const $ = require ("sanctuary-def")
 
-const Layout = ({ products, cart: apiCart, sources, children, inIndex, inCart, inSearch, searchQuery, pageDescription, msg }) => {
+const Layout = ({ products, cart: apiCart, sources, children, inIndex, inCart, inSearch, searchQuery, pageDescription, msg, session }) => {
   const [cart, setCart] = useState(apiCart)
-  const [session, loading] = useSession()
+  // const [session, loading] = useSession()
   const [ message, setMessage ] = useState(msg)
   const router = useRouter()
   const mbUser = S.get (S.is ($.Object)) ("user") (session)
@@ -81,23 +81,24 @@ const Layout = ({ products, cart: apiCart, sources, children, inIndex, inCart, i
 
       <Pane display="flex" flexDirection="column" height="100vh" background={S.props(["palette", "purple", "lightest"])(primaTheme)}>
         
-        {loading 
-          ? <SpinnerBox />
-          : (!session && <LoginBox />) 
-          || (session && 
-            <CartContext.Provider value={cart}>
-              <SearchBox />
-              
-              { !message && pageDescription }
+        {/* {loading  */}
+        {/* ? <SpinnerBox /> */}
+        {/* : (!session && <LoginBox />)  */}
+        {/* || (session &&  */}
+        <CartContext.Provider value={cart}>
+          <SearchBox />
+          
+          { !message && pageDescription }
 
-              { message && <Alert marginX={majorScale (2)} intent={"none"} title={message} />}
+          { message && <Alert marginX={majorScale (2)} intent={"none"} title={message} />}
 
-              <ProductList updateProductQuantityBy={boundUpdateQuantity} products={products} sources={indexedSources} user={user} />
-              
-              <Totalizer inCart={inCart} total={S.fromMaybe("R$ 0")(S.map(currency.format)(total))} count={cartItemsCount} clearCart={boundClearCart} promoteCartToPurchase={boundPromoteCartToPurchase} />
-              <Header user={user} loading={loading} />
-            </CartContext.Provider>)
-        }
+          <ProductList updateProductQuantityBy={boundUpdateQuantity} products={products} sources={indexedSources} user={user} />
+          
+          <Totalizer inCart={inCart} total={S.fromMaybe("R$ 0")(S.map(currency.format)(total))} count={cartItemsCount} clearCart={boundClearCart} promoteCartToPurchase={boundPromoteCartToPurchase} />
+          <Header user={user} loading={false} />
+        </CartContext.Provider>
+        {/* )  */}
+        {/* } */}
       </Pane>
     </>
   )
