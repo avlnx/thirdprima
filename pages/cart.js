@@ -2,11 +2,9 @@ import Layout from "../components/layout"
 import ErrorResponse from "../components/errorResponse"
 import { getSources, getFullCart, parseJsonFromObject, parseJsonFromListOfObjects } from "../lib/prima"
 import connect from "../lib/db"
-import { Alert, majorScale, minorScale, Pane, ShoppingCartIcon, Text } from "evergreen-ui"
-import { useSession, signIn } from "next-auth/client"
-import LoginBox from "../components/loginBox"
+import { Alert, majorScale } from "evergreen-ui"
 import SpinnerBox from "../components/spinnerBox"
-import { getSession, signIn } from "next-auth/client"
+import { getSession, signIn, useSession } from "next-auth/client"
 
 const S = require ("sanctuary")
 
