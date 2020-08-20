@@ -12,27 +12,25 @@ import SpinnerBox from "../components/spinnerBox"
 import ErrorResponse from "../components/errorResponse"
 import connect from "../lib/db"
 import { parseJsonFromListOfObjects, parseJsonFromObject, getSources, getCart } from "../lib/prima"
-import { useSession, getSession } from "next-auth/client"
+import { useSession, getSession, signIn } from "next-auth/client"
 import { useRouter } from "next/router"
 import { useEffect } from "react"
 
 const S = require("sanctuary")
 const $ = require("sanctuary-def")
 
-function Search({ products, sources, cart: apiCart, query, error }) {
+function Search({ products, sources, cart: apiCart, error }) {
   const [session, loading] = useSession()
   const router = useRouter()
+  const query = router.query
 
   useEffect(() => {
-    if (!loading && !session) router.push("/auth/login")
+    if (!loading && !session) signIn("auth0")
   }, [loading, session])
 
   if (loading) return <SpinnerBox />
   if (error) return <ErrorResponse />
-  
-  // if (!session) router.push("/auth/login")
-  // if (!loading && !session) return <LoginBox />
-  
+    
   const pageDescription = <Alert
     intent="none"
     title={`Buscando ${query.keyword}`}
@@ -63,8 +61,6 @@ export async function getServerSideProps(context) {
       products: S.maybeToNullable(products),
       sources: S.maybeToNullable(sources),
       cart: S.maybeToNullable(cart),
-      query: query,
-      session: session,
     }
   }
 }

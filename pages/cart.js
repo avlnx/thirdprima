@@ -3,19 +3,17 @@ import ErrorResponse from "../components/errorResponse"
 import { getSources, getFullCart, parseJsonFromObject, parseJsonFromListOfObjects } from "../lib/prima"
 import connect from "../lib/db"
 import { Alert, majorScale, minorScale, Pane, ShoppingCartIcon, Text } from "evergreen-ui"
-import { useSession } from "next-auth/client"
+import { useSession, signIn } from "next-auth/client"
 import LoginBox from "../components/loginBox"
 import SpinnerBox from "../components/spinnerBox"
-import { useRouter } from "next/router"
-import { getSession } from "next-auth/client"
+import { getSession, signIn } from "next-auth/client"
 
 const S = require ("sanctuary")
 
 function Cart({ sources, cart: apiCart, error }) {
   const [session, loading ] = useSession()
-  const router = useRouter()
   if (loading) return <SpinnerBox />
-  if (!loading && !session) router.push("/auth/login")
+  if (!loading && !session) signIn("auth0")
   if (error) return <ErrorResponse />
 
   const pageDescription = <Alert

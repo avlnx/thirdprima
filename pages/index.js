@@ -7,6 +7,7 @@ import { useSession, getSession } from "next-auth/client"
 import SpinnerBox from "../components/spinnerBox"
 import { useRouter } from "next/router"
 import { useState, useEffect } from "react"
+import { signIn } from "next-auth/client"
 
 const S = require ("sanctuary")
 const $ = require ("sanctuary-def")
@@ -15,9 +16,14 @@ const Home = ({ products, sources, cart: apiCart, error, msg }) => {
   const [session, loading] = useSession()
   const [isDescriptionVisible, setIsDescriptionVisible] = useState(true)
   const router = useRouter()
+  const query = router.query
 
   useEffect(() => {
-    if (!loading && !session) router.push("/auth/login")
+    if (!loading && !session) {
+      const authenticate = S.elem("a")(S.keys(query))
+      authenticate ? signIn("auth0") : window.location = "https://www.prima.market"
+      return null
+    } 
   }, [loading, session])
   
   if (loading) return <SpinnerBox message={"Construindo sua experiência customizada"} />
