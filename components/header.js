@@ -1,6 +1,5 @@
-import Link from "next/link"
-import { Badge, Button, Heading, majorScale, minorScale, Pane, Text } from "evergreen-ui"
-import { brand, palette, primaTheme } from "../theme"
+import { Badge, Button, Heading, majorScale, minorScale, Pane } from "evergreen-ui"
+import { brand, palette } from "../theme"
 import { signOut } from "next-auth/client"
 
 const S = require("sanctuary")
