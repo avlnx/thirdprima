@@ -3,7 +3,6 @@ import Header from "./header"
 import { useState } from "react"
 import ProductList from "../components/productList"
 import Totalizer from "../components/totalizer"
-import LoginBox from "../components/loginBox"
 import { currency, makeCartMutation, postNextCartState, getNextCart, CartContext, indexById, CARTSTATUS } from "../lib/prima"
 import { primaTheme } from "../theme"
 import { useRouter } from "next/router"
@@ -11,18 +10,14 @@ import {
   majorScale,
   Alert,
   Pane,
-  toaster,
 } from "evergreen-ui"
-import SpinnerBox from "./spinnerBox"
 import SearchBox from "./searchBox"
-import { signIn, signOut, useSession } from "next-auth/client"
 
 const S = require("sanctuary")
 const $ = require ("sanctuary-def")
 
 const Layout = ({ products, cart: apiCart, sources, children, inIndex, inCart, inSearch, searchQuery, pageDescription, msg, session }) => {
   const [cart, setCart] = useState(apiCart)
-  // const [session, loading] = useSession()
   const [ message, setMessage ] = useState(msg)
   const router = useRouter()
   const mbUser = S.get (S.is ($.Object)) ("user") (session)
@@ -81,10 +76,6 @@ const Layout = ({ products, cart: apiCart, sources, children, inIndex, inCart, i
 
       <Pane display="flex" flexDirection="column" height="100vh" background={S.props(["palette", "purple", "lightest"])(primaTheme)}>
         
-        {/* {loading  */}
-        {/* ? <SpinnerBox /> */}
-        {/* : (!session && <LoginBox />)  */}
-        {/* || (session &&  */}
         <CartContext.Provider value={cart}>
           <SearchBox />
           
@@ -97,8 +88,6 @@ const Layout = ({ products, cart: apiCart, sources, children, inIndex, inCart, i
           <Totalizer inCart={inCart} total={S.fromMaybe("R$ 0")(S.map(currency.format)(total))} count={cartItemsCount} clearCart={boundClearCart} promoteCartToPurchase={boundPromoteCartToPurchase} />
           <Header user={user} loading={false} />
         </CartContext.Provider>
-        {/* )  */}
-        {/* } */}
       </Pane>
     </>
   )

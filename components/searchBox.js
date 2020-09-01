@@ -1,6 +1,6 @@
-import { Button, Card, Heading, majorScale, Pane, SearchInput, SearchIcon, Text, minorScale } from "evergreen-ui"
+import { Button, Card, Heading, majorScale, Pane, SearchInput, SearchIcon } from "evergreen-ui"
 import Link from "next/link"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { brand, palette } from "../theme"
 
 const S = require("sanctuary")
@@ -8,6 +8,10 @@ const S = require("sanctuary")
 const SearchBox = () => {
   const [ query, setQuery ] = useState("")
   const [ searching, setSearching ] = useState(false)
+
+  useEffect(() => {
+    setSearching(false)
+  }, [])
 
   const quote = q => (`\"${q}\"`)
 
@@ -24,7 +28,7 @@ const SearchBox = () => {
         <form>
           <Pane display="flex"  >
             <SearchInput placeholder="Buscar produto" onChange={e => setQuery(e.target.value)} width="auto" />
-            <Link  href={{ pathname: "/search", query: { keyword: quote(query) } }}><Button isLoading={searching} onClick={() => setSearching(true)} marginLeft={ majorScale(1) } style={{ background: `${lightPrimary}`, color: "white" }} iconAfter={SearchIcon}>Buscar</Button></Link>
+            <Link  href={{ pathname: `/search/${query}` }}><Button isLoading={searching} onClick={() => setSearching(true)} marginLeft={ majorScale(1) } style={{ background: `${lightPrimary}`, color: "white" }} iconAfter={SearchIcon}>Buscar</Button></Link>
           </Pane>
         </form>
       </Pane>
