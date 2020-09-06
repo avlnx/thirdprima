@@ -4,6 +4,7 @@ import Head from "next/head"
 import { primaTheme } from "../theme"
 import connect from "../lib/db"
 import { Button, majorScale, minorScale, Text } from "evergreen-ui"
+import CardContent from "../components/cardContent"
 
 const S = require("sanctuary")
 const $ = require("sanctuary-def")
@@ -12,6 +13,8 @@ const Master = ({variants, sources}) => {
   console.log("variants", variants)
   const lightBg = S.props(["palette", "neutral", "light"])(primaTheme)
   const getSource = id => S.maybeToNullable (S.find (s => S.prop ("_id") (s) == (id)) (sources))
+
+
   
   return (
     <>
@@ -31,16 +34,13 @@ const Master = ({variants, sources}) => {
 
         <Pane display="flex" flexWrap="wrap">
           {S.unchecked.map(v => (
-            <Card flexBasis={"27%"} marginRight={"2%"} marginBottom={"2%"} flexGrow={1} padding={majorScale(2)} elevation={1} width={300} display="flex" flexDirection="column" justifyContent="space-between" key={v._id} background={"white"}>
-              <Text style={{"margin": 0, "marginBottom": "10px"}}>{v.label}</Text>
-              <small><pre style={{ "margin": 0}}>
-                @{getSource(v.source).label}<br/>
+            <CardContent key={v._id} title={v.label}>
+              @{getSource(v.source).label}<br />
                 R$ {v.price} / {v.pack_size}{v.pack_unit}
-              </pre></small>
-            </Card>
+            </CardContent>
           ))(variants)}
         </Pane>
-        
+
       </Pane>
     </>
   )
