@@ -22,7 +22,7 @@ export default async (req, res) => {
     const variants = S.maybeToNullable(S.chain(S.unchecked.value ("variants")) (msgData))
     const variantIds = S.justs(S.unchecked.map(S.unchecked.value ("_id")) (variants))
     const variantObjectIds = S.unchecked.map(id => new ObjectID(id))(variantIds)
-
+    
     await db.collection("variants").updateMany(
       { _id: { $in: variantObjectIds } },
       {
@@ -33,7 +33,7 @@ export default async (req, res) => {
 
     console.log("msgData", msgData)
 
-    return res.status(200).json({ success: "Dados recebidos" })
+    return res.status(200).json({ ok: "true", success: "Variações salvas com sucesso" })
   } else {
     return res.status(400).json({ error: "Método inválido. Admins foram notificados." })
   }

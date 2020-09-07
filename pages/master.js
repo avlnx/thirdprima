@@ -1,5 +1,5 @@
 
-import { Badge, Button, Card, Dialog, Heading, IconButton, majorScale, Pane, PlusIcon, Text, TextInput } from "evergreen-ui"
+import { Badge, Button, Dialog, Heading, majorScale, Pane, Text, TextInput, toaster } from "evergreen-ui"
 import Head from "next/head"
 import { primaTheme } from "../theme"
 import connect from "../lib/db"
@@ -18,7 +18,6 @@ const Master = ({ variants, sources, products }) => {
   const filteredVs = v => S.filter(variant => { return (variant._id != v._id) })
 
   const selectVariant = v => {
-    // const filteredVs = S.filter(variant => { return (variant._id != v._id) })(selectedVs)
     const filtered = filteredVs(v)(selectedVs)
     setSelectedVs([...filtered, v])
   }
@@ -48,34 +47,24 @@ const Master = ({ variants, sources, products }) => {
   ))(selectedVs)
 
   const setVariantsProduct = vs => async p => {
-    console.log(`About to set ${S.size(vs)} variants to product: ${p._id}`)
     const data = {
       "variants": vs, "product": p._id
     }
-    return await fetch("/api/master", {
+    const res = await fetch("/api/master", {
       method: "post",
       body: JSON.stringify(data)
-    }).then (checkStatus)
-  }
-
-  // export const postNextCartState = async (nextCart) => {
-  //   // setQuantity(S.max(0)(quantity + delta))
-  //   return await fetch("/api/cart", {
-  //     method: "post",
-  //     body: JSON.stringify(nextCart)
-  //   }).then(checkStatus)
-  // }
-
-  function checkStatus(response) {
-    if (response.ok) {
-      return response
-    } else {
-      var error = new Error(response.statusText)
-      error.response = response
+    })
+    if (!res.ok) {
+      var error = new Error(res.statusText)
+      error.response = res
       return Promise.reject(error)
     }
+    // response ok
+    setSelectedVs([])
+    setPickingProduct(false)
+    toaster.success("Variações atualizadas com sucesso.")
+    return res
   }
-
 
   return (
     <>
