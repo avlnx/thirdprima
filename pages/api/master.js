@@ -16,17 +16,25 @@ export default async (req, res) => {
     // const variants = S.chain(S.prop("variants"))(products)
     // const sources = await db.collection("sources").find({}).toArray()
     
-
-    const msgData = S.parseJson(S.is($.Object))(S.prop("body")(req))
-    const productId = S.chain(S.unchecked.value ("product")) (msgData)
+    const msgData = S.parseJson(S.is($.Object))(S.prop("body")(req))  
     const variants = S.maybeToNullable(S.chain(S.unchecked.value ("variants")) (msgData))
     const variantIds = S.justs(S.unchecked.map(S.unchecked.value ("_id")) (variants))
     const variantObjectIds = S.unchecked.map(id => new ObjectID(id))(variantIds)
+
+    const productId = S.chain(S.unchecked.value("product"))(msgData)
     
+    let product = new ObjectID(S.maybeToNullable(productId))
+    if (S.isJust(S.map(S.unchecked.value("newProdLabel"))(msgData))) {
+      const result = await db.collection("products").insertOne({
+        "label": msgData.newProdLabel,
+      })
+      product = result.insertedId
+    }
+
     await db.collection("variants").updateMany(
       { _id: { $in: variantObjectIds } },
       {
-        $set: { "product": new ObjectID(S.maybeToNullable (productId)) },
+        $set: { "product": product },
         $currentDate: { lastModified: true }
       }
     )

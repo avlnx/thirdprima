@@ -5,6 +5,7 @@ import { primaTheme } from "../theme"
 import connect from "../lib/db"
 import CardContent from "../components/cardContent"
 import { useState } from "react"
+import { useRouter } from "next/router"
 
 const S = require("sanctuary")
 const $ = require("sanctuary-def")
@@ -14,6 +15,8 @@ const Master = ({ variants, sources, products }) => {
   const getSource = id => S.maybeToNullable(S.find(source => S.prop("_id")(source) == (id))(sources))
   const [selectedVs, setSelectedVs] = useState([])
   const [pickingProduct, setPickingProduct] = useState(false)
+  const [newProductLabel, setNewProductLabel] = useState("")
+  const router = useRouter()
 
   const filteredVs = v => S.filter(variant => { return (variant._id != v._id) })
 
@@ -46,9 +49,9 @@ const Master = ({ variants, sources, products }) => {
     </CardContent>
   ))(selectedVs)
 
-  const setVariantsProduct = vs => async p => {
+  const setVariantsProduct = async ({ vs, p, newProdLabel }) => {
     const data = {
-      "variants": vs, "product": p._id
+      "variants": vs, "product": p._id, "newProdLabel": newProdLabel
     }
     const res = await fetch("/api/master", {
       method: "post",
@@ -62,6 +65,7 @@ const Master = ({ variants, sources, products }) => {
     // response ok
     setSelectedVs([])
     setPickingProduct(false)
+    router.reload()
     toaster.success("Variações atualizadas com sucesso.")
     return res
   }
@@ -92,15 +96,17 @@ const Master = ({ variants, sources, products }) => {
             <TextInput
               name="product"
               placeholder="Nome do novo produto"
+              onChange={e => setNewProductLabel(e.target.value)}
+              value={newProductLabel}
             />
-            <Button appearance="primary">Criar e linkar produto</Button>
+            <Button onClick={() => setVariantsProduct({"vs": selectedVs, "p": {}, "newProdLabel": newProductLabel})} appearance="primary">Criar e linkar produto</Button>
           </Pane>
 
           <Heading size={500} marginTop="default" marginBottom={majorScale(1)}>Ou escolha entre um dos produtos existentes. É só clicar.</Heading>
           <Pane display="flex" flexWrap="wrap">
             {S.unchecked.map(p => {
               // console.log(p)
-              return (<CardContent key={p._id} title={p.label} onClick={() => setVariantsProduct (selectedVs) (p)}>
+              return (<CardContent key={p._id} title={p.label} onClick={() => setVariantsProduct ({"vs": selectedVs, "p": p})}>
               </CardContent>)
             })(products)}
           </Pane>
