@@ -1,4 +1,3 @@
-
 import connect from "../../lib/db"
 import { ObjectID } from "bson"
 
@@ -10,11 +9,6 @@ const $ = require("sanctuary-def")
 export default async (req, res) => {
   if (req.method === "POST") {
     const db = await connect()
-    // const productsCollection = await db.collection("products")
-    // const products = await grabCartsProducts(cart, productsCollection)
-
-    // const variants = S.chain(S.prop("variants"))(products)
-    // const sources = await db.collection("sources").find({}).toArray()
     
     const msgData = S.parseJson(S.is($.Object))(S.prop("body")(req))  
     const variants = S.maybeToNullable(S.chain(S.unchecked.value ("variants")) (msgData))
@@ -22,11 +16,10 @@ export default async (req, res) => {
     const variantObjectIds = S.unchecked.map(id => new ObjectID(id))(variantIds)
 
     const productId = S.chain(S.unchecked.value("product"))(msgData)
-    
     let product = new ObjectID(S.maybeToNullable(productId))
-    if (S.isJust(S.map(S.unchecked.value("newProdLabel"))(msgData))) {
+    if (S.maybeToNullable(msgData).newProdLabel) {
       const result = await db.collection("products").insertOne({
-        "label": msgData.newProdLabel,
+        "label": S.maybeToNullable(msgData).newProdLabel,
       })
       product = result.insertedId
     }
@@ -35,6 +28,16 @@ export default async (req, res) => {
       { _id: { $in: variantObjectIds } },
       {
         $set: { "product": product },
+        $currentDate: { lastModified: true }
+      }
+    )
+
+    const variantsList = await db.collection("variants").find({"product": product}).toArray()
+
+    await db.collection("products").updateOne(
+      { _id: product },
+      {
+        $set: { "variants": variantsList },
         $currentDate: { lastModified: true }
       }
     )
