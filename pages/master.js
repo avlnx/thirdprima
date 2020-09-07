@@ -154,7 +154,7 @@ export const getSources = async (db) => {
 }
 
 export const getProducts = async (db) => {
-  const ps = await db.collection("products").find({}).sort({ label: 1 }).toArray()
+  const ps = await db.collection("products").find({}).project({_id: 1, label: 1}).sort({ label: 1 }).toArray()
   return JSON.stringify(ps)
 }
 
