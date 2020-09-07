@@ -6,6 +6,7 @@ import connect from "../lib/db"
 import CardContent from "../components/cardContent"
 import { useState } from "react"
 import { useRouter } from "next/router"
+import Link from "next/link"
 
 const S = require("sanctuary")
 const $ = require("sanctuary-def")
