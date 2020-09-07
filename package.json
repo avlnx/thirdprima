@@ -16,6 +16,7 @@
     "btoa": "^1.2.1",
     "dotenv": "^8.2.0",
     "evergreen-ui": "^4.29.1",
+    "file-loader": "^6.1.0",
     "isomorphic-unfetch": "^3.0.0",
     "jshint": "^2.12.0",
     "mongodb": "^3.6.0",
@@ -26,6 +27,7 @@
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "sanctuary": "^3.0.0",
+    "url-loader": "^4.1.0",
     "webpack": "^4.44.1"
   },
   "devDependencies": {
