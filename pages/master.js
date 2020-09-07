@@ -143,7 +143,7 @@ export default Master
 
 const getVariants = async (db) => {
   // todo: filter flagged variants
-  const vs = await db.collection("variants").find({ product: null }, { limit: 80 }).sort({label: 1}).toArray()
+  const vs = await db.collection("variants").find({ product: null }).sort({label: 1}).toArray()
   return JSON.stringify(vs)
 }
 
