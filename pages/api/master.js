@@ -42,8 +42,6 @@ export default async (req, res) => {
       }
     )
 
-    console.log("msgData", msgData)
-
     return res.status(200).json({ ok: "true", success: "Variações salvas com sucesso" })
   } else {
     return res.status(400).json({ error: "Método inválido. Admins foram notificados." })

@@ -66,7 +66,7 @@ const Master = ({ variants, sources, products }) => {
     setSelectedVs([])
     setPickingProduct(false)
     router.reload()
-    toaster.success("Variações atualizadas com sucesso.")
+    toaster.success("Variações atualizadas com sucesso. Recarregando...")
     return res
   }
 
@@ -105,7 +105,6 @@ const Master = ({ variants, sources, products }) => {
           <Heading size={500} marginTop="default" marginBottom={majorScale(1)}>Ou escolha entre um dos produtos existentes. É só clicar.</Heading>
           <Pane display="flex" flexWrap="wrap">
             {S.unchecked.map(p => {
-              // console.log(p)
               return (<CardContent key={p._id} title={p.label} onClick={() => setVariantsProduct ({"vs": selectedVs, "p": p})}>
               </CardContent>)
             })(products)}
@@ -143,29 +142,20 @@ const Master = ({ variants, sources, products }) => {
 
 export default Master
 
-const getThings = async (db, things, queryObject = {}) => {
-  const collection = await db.collection(things)
-  const options = { limit: 25 }
-  // const options = {}
-  const results = await collection.find(queryObject, options)
-  const stuff = await results.toArray()
-  return stuff
-}
-
 export const getVariants = async (db) => {
   // todo: filter flagged variants
-  const vs = await getThings(db, "variants", { product: null })
+  const vs = await db.collection("variants").find({ product: null }, { limit: 80 }).sort({label: 1}).toArray()
   return JSON.stringify(vs)
 }
 
 export const getSources = async (db) => {
-  const vs = await getThings(db, "sources")
-  return JSON.stringify(vs)
+  const ss = await db.collection("sources").find({}).toArray()
+  return JSON.stringify(ss)
 }
 
 export const getProducts = async (db) => {
-  const products = await getThings(db, "products", { "variants": { $not: { $size: 0 } } })
-  return JSON.stringify(products)
+  const ps = await db.collection("products").find({}).sort({ label: 1 }).toArray()
+  return JSON.stringify(ps)
 }
 
 export async function getServerSideProps(context) {
