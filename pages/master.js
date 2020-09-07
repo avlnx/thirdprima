@@ -1,4 +1,3 @@
-
 import { Badge, Button, Dialog, Heading, majorScale, Pane, Text, TextInput, toaster } from "evergreen-ui"
 import Head from "next/head"
 import { primaTheme } from "../theme"
@@ -143,18 +142,18 @@ const Master = ({ variants, sources, products }) => {
 
 export default Master
 
-export const getVariants = async (db) => {
+const getVariants = async (db) => {
   // todo: filter flagged variants
   const vs = await db.collection("variants").find({ product: null }, { limit: 80 }).sort({label: 1}).toArray()
   return JSON.stringify(vs)
 }
 
-export const getSources = async (db) => {
+const getSources = async (db) => {
   const ss = await db.collection("sources").find({}).toArray()
   return JSON.stringify(ss)
 }
 
-export const getProducts = async (db) => {
+const getProducts = async (db) => {
   const ps = await db.collection("products").find({}).project({_id: 1, label: 1}).sort({ label: 1 }).toArray()
   return JSON.stringify(ps)
 }
